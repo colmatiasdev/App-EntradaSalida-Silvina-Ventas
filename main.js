@@ -8,7 +8,7 @@
     links.forEach(function (link) {
       var href = link.getAttribute('href') || '';
       link.classList.remove('nav__link--active');
-      if (path.indexOf('nueva-venta') !== -1 && href.indexOf('nueva-venta') !== -1) {
+      if (path.toLowerCase().indexOf('nueva-venta') !== -1 && href.toLowerCase().indexOf('nueva-venta') !== -1) {
         link.classList.add('nav__link--active');
       }
       if (path.indexOf('ventas-por-meses') !== -1 && href.indexOf('ventas-por-meses') !== -1) {
@@ -17,7 +17,7 @@
     });
     // Si estamos en index, marcar según hash o dejar la primera
     if (path.endsWith('/') || path.endsWith('index.html') || path === '') {
-      var primera = document.querySelector('.nav__link[href*="nueva-venta"]');
+      var primera = document.querySelector('.nav__link[href*="Nueva-venta"]');
       if (primera) primera.classList.add('nav__link--active');
     }
   }

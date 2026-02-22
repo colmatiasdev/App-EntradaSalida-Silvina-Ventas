@@ -1,0 +1,9 @@
+/* Módulo Footer - estilos de la sección footer */
+.footer {
+  background: var(--color-surface);
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid #eee;
+}

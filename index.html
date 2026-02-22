@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Toti Sanguicería - Ventas</title>
-  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="src/Footer/footer.css">
 </head>
 <body>
   <header class="header">
@@ -15,7 +16,7 @@
     <nav class="nav">
       <ul class="nav__menu">
         <li class="nav__item">
-          <a href="src/Ventas/nueva-venta.html" class="nav__link nav__link--active">
+          <a href="src/Ventas/Nueva-venta/Nueva-venta.html" class="nav__link nav__link--active">
             Nueva venta
           </a>
         </li>
@@ -35,7 +36,7 @@
         Selecciona una opción del menú para comenzar: registrar una nueva venta o consultar las ventas por mes.
       </p>
       <div class="hero__cards">
-        <a href="src/Ventas/nueva-venta.html" class="card">
+        <a href="src/Ventas/Nueva-venta/Nueva-venta.html" class="card">
           <span class="card__icon">🛒</span>
           <h3 class="card__title">Nueva venta</h3>
           <p class="card__text">Registrar una nueva venta en el sistema.</p>
@@ -49,10 +50,9 @@
     </section>
   </main>
 
-  <footer class="footer">
-    <p>&copy; Toti Sanguicería - Ventas</p>
-  </footer>
+  <div id="footer-container" data-footer-src="src/Footer/footer.html"></div>
 
-  <script src="js/main.js"></script>
+  <script src="main.js"></script>
+  <script src="src/Footer/footer.js"></script>
 </body>
 </html>
