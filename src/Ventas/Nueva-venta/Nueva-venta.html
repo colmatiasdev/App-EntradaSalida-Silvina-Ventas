@@ -17,7 +17,10 @@
     <nav class="nav">
       <ul class="nav__menu">
         <li class="nav__item">
-          <a href="Nueva-venta.html" class="nav__link">Nueva venta</a>
+          <a href="../Seleccionar-cliente/seleccionar-cliente.html" class="nav__link">Seleccionar cliente</a>
+        </li>
+        <li class="nav__item">
+          <a href="Nueva-venta.html" class="nav__link nav__link--active">Nueva venta</a>
         </li>
         <li class="nav__item">
           <a href="../Listado-Ventas/listado-ventas.html" class="nav__link">Listado de ventas</a>
@@ -33,6 +36,12 @@
     <div class="page-header">
       <a href="../../../index.html" class="back-link">← Volver al inicio</a>
       <h1>Nueva venta</h1>
+      <div class="nueva-venta__cliente-info" id="nueva-venta-cliente-info">
+        <span class="nueva-venta__cliente-label">Venta para:</span>
+        <strong class="nueva-venta__cliente-nombre">—</strong>
+        <span class="nueva-venta__cliente-tipo" id="nueva-venta-cliente-tipo"></span>
+        <a href="../Seleccionar-cliente/seleccionar-cliente.html" class="nueva-venta__cambiar-cliente">Cambiar cliente</a>
+      </div>
     </div>
 
     <section class="nueva-venta__listado">
@@ -70,16 +79,6 @@
             </tr>
           </tfoot>
         </table>
-        <div class="nueva-venta__cliente">
-          <label for="nueva-venta-cliente">Cliente (nombre y apellido)</label>
-          <input type="text" id="nueva-venta-cliente" class="nueva-venta__input" placeholder="Opcional">
-          <label for="nueva-venta-tipo-lista">Tipo lista de precio</label>
-          <select id="nueva-venta-tipo-lista" class="nueva-venta__select">
-            <option value="">—</option>
-            <option value="Mayorista">Mayorista</option>
-            <option value="Distribuidor">Distribuidor</option>
-          </select>
-        </div>
         <div class="nueva-venta__guardar">
           <button type="button" class="nueva-venta__btn-guardar" id="nueva-venta-btn-guardar" disabled>Guardar venta</button>
           <span class="nueva-venta__guardar-msg" id="nueva-venta-guardar-msg"></span>

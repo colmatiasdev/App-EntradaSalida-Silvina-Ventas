@@ -7,6 +7,8 @@
   var CORS_PROXY = window.APP_CONFIG && window.APP_CONFIG.CORS_PROXY;
   var HOJA_PRODUCTOS = (window.APP_CONFIG && window.APP_CONFIG.HOJA_PRODUCTOS) || 'PRODUCTOS';
   var NEGOCIO = window.APP_NEGOCIO;
+  var STORAGE_KEY_CLIENTE = 'APP_CLIENTE_VENTA';
+  var clienteSeleccionado = null;
   var productos = [];
   var carrito = [];
 
@@ -29,6 +31,20 @@
         p.PRECIO = Number(f['PRECIO-MAYORISTA']) || Number(f['PRECIO-DISTRIBUIDOR']) || 0;
         return p;
       });
+  }
+
+  function getPrecioParaCliente(p) {
+    if (!clienteSeleccionado) return p.PRECIO || p['PRECIO-MAYORISTA'] || 0;
+    var tipo = (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').toUpperCase();
+    if (tipo === 'DISTRIBUIDOR' && (p['PRECIO-DISTRIBUIDOR'] !== undefined && p['PRECIO-DISTRIBUIDOR'] !== ''))
+      return Number(p['PRECIO-DISTRIBUIDOR']) || 0;
+    return Number(p['PRECIO-MAYORISTA']) || Number(p['PRECIO-DISTRIBUIDOR']) || 0;
+  }
+
+  function aplicarPreciosSegunCliente() {
+    productos.forEach(function (p) {
+      p.PRECIO = getPrecioParaCliente(p);
+    });
   }
 
   function llenarSelectCategoria() {
@@ -60,6 +76,7 @@
 
     function aplicarProductosYFiltro(filas) {
       productos = normalizarProductos(filas);
+      aplicarPreciosSegunCliente();
       mensaje.textContent = '';
       llenarSelectCategoria();
       pintarListado();
@@ -123,7 +140,7 @@
         li.className = 'nueva-venta__item';
         li.innerHTML =
           '<span class="nueva-venta__item-nombre">' + escapeHtml(p['NOMBRE-PRODUCTO']) + '</span>' +
-          '<span class="nueva-venta__item-precio">' + formatearPrecio(p.PRECIO || p['PRECIO-MAYORISTA'] || 0) + '</span>' +
+          '<span class="nueva-venta__item-precio">' + formatearPrecio(getPrecioParaCliente(p)) + '</span>' +
           '<button type="button" class="nueva-venta__btn-add" data-id="' + escapeHtml(p[TABLA.pk]) + '">Agregar</button>';
         li.querySelector('.nueva-venta__btn-add').addEventListener('click', function () {
           agregarAlCarrito(p);
@@ -152,7 +169,13 @@
     if (item) {
       item.cantidad += 1;
     } else {
-      carrito.push({ producto: producto, cantidad: 1 });
+      var p = producto;
+      var precioEfectivo = getPrecioParaCliente(p);
+      if (p.PRECIO !== precioEfectivo) {
+        p = Object.assign({}, p);
+        p.PRECIO = precioEfectivo;
+      }
+      carrito.push({ producto: p, cantidad: 1 });
     }
     pintarResumen();
   }
@@ -262,10 +285,8 @@
     var ahora = new Date();
     var hora = ahora.getHours() + ':' + (ahora.getMinutes() < 10 ? '0' : '') + ahora.getMinutes();
     var idVenta = 'V-' + Date.now();
-    var clienteEl = document.getElementById('nueva-venta-cliente');
-    var tipoListaEl = document.getElementById('nueva-venta-tipo-lista');
-    var nombreApellido = (clienteEl && clienteEl.value) ? clienteEl.value.trim() : '';
-    var tipoListaPrecio = (tipoListaEl && tipoListaEl.value) ? tipoListaEl.value : '';
+    var nombreApellido = clienteSeleccionado ? (clienteSeleccionado['NOMBRE-APELLIDO'] || '').trim() : '';
+    var tipoListaPrecio = clienteSeleccionado ? (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim() : '';
     var payload = {
       accion: 'guardarVenta',
       hoja: nombreHoja,
@@ -345,7 +366,32 @@
     msg.className = 'nueva-venta__guardar-msg ' + (esError ? 'err' : 'ok');
   }
 
+  function aplicarClienteEnPantalla() {
+    var bloqueCliente = document.getElementById('nueva-venta-cliente-info');
+    var tipoEl = document.getElementById('nueva-venta-cliente-tipo');
+    if (!clienteSeleccionado) return;
+    var nombre = (clienteSeleccionado['NOMBRE-APELLIDO'] || '').trim();
+    var tipoLista = (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim();
+    if (bloqueCliente) {
+      bloqueCliente.querySelector('.nueva-venta__cliente-nombre').textContent = nombre || '(Sin nombre)';
+      bloqueCliente.classList.add('nueva-venta__cliente-info--visible');
+    }
+    if (tipoEl) tipoEl.textContent = tipoLista ? ' · ' + tipoLista : '';
+  }
+
   function init() {
+    try {
+      var raw = sessionStorage.getItem(STORAGE_KEY_CLIENTE);
+      if (!raw) {
+        window.location.href = '../Seleccionar-cliente/seleccionar-cliente.html?volver=Nueva-venta';
+        return;
+      }
+      clienteSeleccionado = JSON.parse(raw);
+    } catch (e) {
+      window.location.href = '../Seleccionar-cliente/seleccionar-cliente.html?volver=Nueva-venta';
+      return;
+    }
+    aplicarClienteEnPantalla();
     document.getElementById('nueva-venta-categoria').addEventListener('change', pintarListado);
     var btnGuardar = document.getElementById('nueva-venta-btn-guardar');
     if (btnGuardar) btnGuardar.addEventListener('click', guardarVenta);

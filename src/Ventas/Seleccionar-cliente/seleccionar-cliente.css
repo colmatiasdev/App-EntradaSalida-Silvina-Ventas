@@ -1,0 +1,65 @@
+/* Seleccionar cliente */
+.seleccionar-cliente__intro {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.seleccionar-cliente__section {
+  margin-bottom: 2rem;
+}
+
+.seleccionar-cliente__mensaje {
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.seleccionar-cliente__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.seleccionar-cliente__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid #eee;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.seleccionar-cliente__nombre {
+  flex: 1 1 100%;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.seleccionar-cliente__tipo {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.seleccionar-cliente__btn {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+
+.seleccionar-cliente__btn:hover {
+  opacity: 0.9;
+  color: white;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleccionar cliente - Panificacion Colombres</title>
+  <link rel="stylesheet" href="../../../index.css">
+  <link rel="stylesheet" href="../../Footer/footer.css">
+  <link rel="stylesheet" href="seleccionar-cliente.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header__logo">
+      <h1>Panificacion Colombres</h1>
+      <span class="header__subtitle">Sistema de Ventas</span>
+    </div>
+    <nav class="nav">
+      <ul class="nav__menu">
+        <li class="nav__item">
+          <a href="seleccionar-cliente.html" class="nav__link nav__link--active">Seleccionar cliente</a>
+        </li>
+        <li class="nav__item">
+          <a href="../Nueva-venta/Nueva-venta.html" class="nav__link">Nueva venta</a>
+        </li>
+        <li class="nav__item">
+          <a href="../Listado-Ventas/listado-ventas.html" class="nav__link">Listado de ventas</a>
+        </li>
+        <li class="nav__item">
+          <a href="../../Dashboard/dashboard.html" class="nav__link">Dashboard</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <a href="../../../index.html" class="back-link">← Volver al inicio</a>
+      <h1>Seleccionar cliente</h1>
+      <p class="seleccionar-cliente__intro">Elegí un cliente para continuar con la venta. Serás redirigido a la página de nueva venta con los datos del cliente cargados.</p>
+    </div>
+
+    <section class="seleccionar-cliente__section">
+      <p class="seleccionar-cliente__mensaje" id="seleccionar-cliente-mensaje">Cargando clientes…</p>
+      <ul class="seleccionar-cliente__lista" id="seleccionar-cliente-lista"></ul>
+    </section>
+  </main>
+
+  <div id="footer-container" data-footer-src="../../Footer/footer.html"></div>
+
+  <script src="../../Config/config.js"></script>
+  <script src="../../Config/tables.js"></script>
+  <script src="../../../main.js"></script>
+  <script src="../../Footer/footer.js"></script>
+  <script src="seleccionar-cliente.js"></script>
+</body>
+</html>

@@ -1,4 +1,40 @@
 /* Módulo Nueva venta - listado y resumen */
+.page-header .nueva-venta__cliente-info {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  display: none;
+}
+
+.page-header .nueva-venta__cliente-info.nueva-venta__cliente-info--visible {
+  display: block;
+}
+
+.nueva-venta__cliente-label {
+  margin-right: 0.35rem;
+}
+
+.nueva-venta__cliente-nombre {
+  color: var(--color-text);
+  margin-right: 0.25rem;
+}
+
+.nueva-venta__cliente-tipo {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-right: 0.75rem;
+}
+
+.nueva-venta__cambiar-cliente {
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.nueva-venta__cambiar-cliente:hover {
+  text-decoration: underline;
+}
+
 .nueva-venta__titulo {
   font-size: 1.1rem;
   color: var(--color-primary);
