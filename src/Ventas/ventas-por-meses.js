@@ -5,7 +5,10 @@
   var APP_TABLES = window.APP_TABLES;
   var APP_SCRIPT_URL = APP_CONFIG && APP_CONFIG.APP_SCRIPT_URL;
   var CORS_PROXY = APP_CONFIG && APP_CONFIG.CORS_PROXY;
-  var NOMBRES_MESES = APP_TABLES && APP_TABLES.NOMBRES_HOJAS_MES;
+  var NOMBRES_MESES = (APP_TABLES && APP_TABLES.NOMBRES_HOJAS_MES) || [
+    'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO',
+    'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
+  ];
 
   /** Orden de columnas: nombre del mes + columnas de la tabla del mes. */
   var columnasTabla = [
@@ -21,6 +24,12 @@
     'MONTO'
   ];
 
+  function getMesActual() {
+    if (!NOMBRES_MESES || !NOMBRES_MESES.length) return '';
+    var idx = new Date().getMonth();
+    return NOMBRES_MESES[idx] || NOMBRES_MESES[0];
+  }
+
   function init() {
     var selectMes = document.getElementById('ventas-meses-mes');
     var btnCargar = document.getElementById('ventas-meses-btn-cargar');
@@ -33,6 +42,8 @@
         opt.textContent = nombre;
         selectMes.appendChild(opt);
       });
+      selectMes.value = getMesActual();
+      cargarVentasDelMes();
     }
 
     btnCargar.addEventListener('click', cargarVentasDelMes);
