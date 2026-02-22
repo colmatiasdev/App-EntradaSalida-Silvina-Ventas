@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard ventas mensuales - Toti Sanguicería</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../Footer/footer.css">
+  <style>
+    :root {
+      --rojo: #C41E3A;
+      --rojo-dark: #9b1730;
+      --rojo-light: #e84a67;
+      --rojo-glass: rgba(196, 30, 58, 0.08);
+      --rojo-glow: rgba(196, 30, 58, 0.18);
+      --bg: #f5f4f2;
+      --surface: #ffffff;
+      --surface2: #faf9f8;
+      --border: #e8e5e1;
+      --text: #1a1614;
+      --text-muted: #7a7370;
+      --text-light: #b0ada9;
+      /* Compatibilidad con módulo Footer */
+      --color-surface: var(--surface);
+      --color-text-muted: var(--text-muted);
+      --radius: 12px;
+      --radius-lg: 18px;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header__brand { display: flex; align-items: baseline; gap: 0.5rem; }
+    .header__brand h1 { font-size: 1.15rem; font-weight: 700; color: var(--rojo); letter-spacing: -0.02em; }
+    .header__brand span { font-size: 0.75rem; color: var(--text-muted); font-weight: 300; }
+
+    .nav { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+    .nav__link {
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .nav__link:hover { background: var(--rojo-glass); color: var(--rojo); }
+    .nav__link--active { background: var(--rojo); color: white; }
+
+    /* MAIN */
+    .main { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .page-title-block {}
+    .back-link {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.35rem;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: var(--rojo); }
+    .page-title { font-size: 1.65rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+    .page-title span { color: var(--rojo); }
+
+    /* FILTRO BAR */
+    .filtro-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filtro-bar label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .select-mes {
+      padding: 0.55rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'Sora', sans-serif;
+      font-weight: 600;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.15s;
+      min-width: 140px;
+    }
+    .select-mes:focus { outline: none; border-color: var(--rojo); }
+
+    .btn-cargar {
+      padding: 0.55rem 1.25rem;
+      background: var(--rojo);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-cargar:hover { background: var(--rojo-dark); }
+    .btn-cargar:active { transform: scale(0.98); }
+
+    .status-badge {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #ccc;
+    }
+    .status-dot--ok { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+    .status-dot--error { background: var(--rojo); }
+    .status-dot--loading {
+      background: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* KPI CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .kpi-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--rojo);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .kpi-card:hover::before { opacity: 1; }
+
+    .kpi-card--primary {
+      background: var(--rojo);
+      color: white;
+      border-color: var(--rojo-dark);
+    }
+    .kpi-card--primary .kpi-label { color: rgba(255,255,255,0.75); }
+    .kpi-card--primary .kpi-value { color: white; }
+    .kpi-card--primary::before { display: none; }
+
+    .kpi-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+      line-height: 1;
+    }
+    .kpi-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .kpi-value { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+    .kpi-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem; }
+    .kpi-card--primary .kpi-sub { color: rgba(255,255,255,0.6); }
+
+    /* CHARTS ROW */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 800px) { .charts-row { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .chart-title::before {
+      content: '';
+      width: 3px; height: 14px;
+      background: var(--rojo);
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    /* BAR CHART */
+    .bar-chart { display: flex; flex-direction: column; gap: 0.6rem; }
+    .bar-row { display: flex; align-items: center; gap: 0.75rem; font-size: 0.78rem; }
+    .bar-label { width: 80px; text-align: right; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    .bar-track { flex: 1; background: var(--bg); border-radius: 4px; height: 22px; overflow: hidden; position: relative; }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rojo-dark), var(--rojo-light));
+      border-radius: 4px;
+      transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+      width: 0;
+    }
+    .bar-val { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.72rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: white; mix-blend-mode: difference; }
+    .bar-count { width: 36px; text-align: right; font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+
+    /* DONUT */
+    .donut-wrapper { display: flex; align-items: center; gap: 1.5rem; }
+    .donut-svg-container { position: relative; flex-shrink: 0; }
+    .donut-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+    .donut-center-val { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); line-height: 1; }
+    .donut-center-label { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .donut-legend { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-name { flex: 1; color: var(--text-muted); }
+    .legend-pct { font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+
+    /* TABLE SECTION */
+    .table-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .table-header-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .table-header-title::before {
+      content: '';
+      width: 3px; height: 14px;
+      background: var(--rojo);
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .table-search {
+      padding: 0.4rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      width: 200px;
+      transition: border-color 0.15s, width 0.2s;
+    }
+    .table-search:focus { outline: none; border-color: var(--rojo); width: 240px; }
+
+    .table-scroll { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    thead th {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--rojo);
+      background: var(--rojo-glass);
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(196,30,58,0.15);
+    }
+    thead th.th-num { text-align: right; }
+
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+
+    tbody td { padding: 0.6rem 1rem; vertical-align: middle; }
+    tbody td.td-num { text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+    .badge-cat {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--rojo-glass);
+      color: var(--rojo);
+    }
+    .badge-cat--promos { background: rgba(202, 138, 4, 0.15); color: #b45309; }
+    .badge-cat--bebida { background: rgba(59,130,246,0.1); color: #2563eb; }
+    .badge-cat--empanada { background: rgba(245,158,11,0.1); color: #b45309; }
+    .badge-cat--postre { background: rgba(168,85,247,0.1); color: #7c3aed; }
+    .badge-cat--otro { background: rgba(20,184,166,0.1); color: #0f766e; }
+
+    /* DETALLE SECTION: CARDS AGRUPADAS POR FECHA */
+    .detalle-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .detalle-header-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .detalle-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .detalle-title::before {
+      content: '';
+      width: 3px; height: 14px;
+      background: var(--rojo);
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .detalle-search {
+      padding: 0.45rem 0.9rem 0.45rem 2rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      width: 210px;
+      transition: border-color 0.15s, width 0.2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a7370' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 0.6rem center;
+    }
+    .detalle-search:focus { outline: none; border-color: var(--rojo); width: 250px; }
+    .detalle-summary { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; }
+    .detalle-summary strong { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+
+    .date-group { margin-bottom: 2rem; }
+    .date-group-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+      position: relative;
+    }
+    .date-group-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .date-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 0.3rem 0.85rem 0.3rem 0.5rem;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .date-pill-icon {
+      width: 28px; height: 28px;
+      background: var(--rojo);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: white;
+      font-weight: 700;
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .date-pill-text { font-size: 0.82rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .date-pill-sub { font-size: 0.7rem; color: var(--text-muted); }
+    .date-group-stats {
+      display: flex;
+      gap: 1rem;
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .date-group-stats span { display: flex; align-items: center; gap: 0.25rem; }
+    .date-group-stats strong { color: var(--rojo); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 0.85rem;
+    }
+    .venta-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .venta-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+      border-color: rgba(196,30,58,0.2);
+    }
+    .card-top {
+      padding: 0.85rem 1rem 0.7rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .card-top-left { flex: 1; min-width: 0; }
+    .card-producto {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.3rem;
+    }
+    .card-id { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text-light); letter-spacing: 0.02em; }
+    .card-monto { font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 700; color: var(--rojo); white-space: nowrap; flex-shrink: 0; letter-spacing: -0.02em; }
+    .card-body {
+      padding: 0.75rem 1rem;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem 1rem;
+    }
+    .card-field { display: flex; flex-direction: column; gap: 0.15rem; }
+    .card-field-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); }
+    .card-field-value { font-size: 0.82rem; color: var(--text); font-weight: 500; }
+    .card-field-value--mono { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+    .card-field-value--accent { color: var(--rojo); font-weight: 700; }
+    .card-footer {
+      padding: 0.55rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface2);
+    }
+    .card-hora { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; color: var(--text-muted); }
+    .card-hora svg { opacity: 0.5; }
+
+    .no-results {
+      padding: 2.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .date-group { animation: fadeSlideUp 0.35s ease both; }
+    .venta-card { animation: fadeSlideUp 0.3s ease both; }
+
+    /* EMPTY / LOADING STATES */
+    .empty-state {
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+    .empty-state-text { font-size: 0.9rem; }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(196,30,58,0.2);
+      border-top-color: var(--rojo);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Hidden */
+    [hidden] { display: none !important; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .main { padding: 1rem; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .donut-wrapper { flex-direction: column; }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header__brand">
+      <h1>Toti Sanguicería</h1>
+      <span>Sistema de Ventas</span>
+    </div>
+    <nav class="nav">
+      <a href="../Ventas/Nueva-venta/Nueva-venta.html" class="nav__link">Nueva venta</a>
+      <a href="../Ventas/Venta-por-meses/ventas-por-meses.html" class="nav__link">Ventas por meses</a>
+      <a href="dashboard-mensual.html" class="nav__link nav__link--active">Dashboard mensual</a>
+      <a href="../Ventas-por-anio/ventas-por-anio.html" class="nav__link">Ventas por año</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="page-title-block">
+        <a href="../../index.html" class="back-link">← Volver al inicio</a>
+        <h1 class="page-title">Dashboard — ventas de <span id="titulo-mes">mes</span></h1>
+      </div>
+    </div>
+
+    <!-- FILTRO BAR -->
+    <div class="filtro-bar">
+      <label for="ventas-meses-mes">Período</label>
+      <select id="ventas-meses-mes" class="select-mes"></select>
+      <button type="button" class="btn-cargar" id="ventas-meses-btn-cargar">
+        <span id="btn-icon">↻</span> Cargar ventas
+      </button>
+      <div class="status-badge" id="status-badge">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="ventas-meses-mensaje">Seleccione un mes</span>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid" id="kpi-grid" hidden>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-label">Facturación total</div>
+        <div class="kpi-value" id="kpi-total">—</div>
+        <div class="kpi-sub" id="kpi-total-sub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🧾</div>
+        <div class="kpi-label">Cantidad de ventas</div>
+        <div class="kpi-value" id="kpi-ventas">—</div>
+        <div class="kpi-sub" id="kpi-ventas-sub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-label">Unidades vendidas</div>
+        <div class="kpi-value" id="kpi-unidades">—</div>
+        <div class="kpi-sub" id="kpi-unidades-sub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">⚡</div>
+        <div class="kpi-label">Ticket promedio</div>
+        <div class="kpi-value" id="kpi-ticket">—</div>
+        <div class="kpi-sub" id="kpi-ticket-sub"></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row" id="charts-row" hidden>
+      <!-- Bar chart: por producto -->
+      <div class="chart-card">
+        <div class="chart-title">Facturación por producto</div>
+        <div class="bar-chart" id="bar-chart"></div>
+      </div>
+      <!-- Donut: por categoría -->
+      <div class="chart-card">
+        <div class="chart-title">Distribución por categoría</div>
+        <div class="donut-wrapper">
+          <div class="donut-svg-container">
+            <svg id="donut-svg" width="130" height="130" viewBox="0 0 130 130"></svg>
+            <div class="donut-center">
+              <div class="donut-center-val" id="donut-center-val">—</div>
+              <div class="donut-center-label">categorías</div>
+            </div>
+          </div>
+          <div class="donut-legend" id="donut-legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE SECTION -->
+    <div id="table-section" hidden>
+      <div class="detalle-header">
+        <div class="detalle-header-left">
+          <div class="detalle-title">Detalle de ventas</div>
+          <input type="search" class="detalle-search" id="table-search" placeholder="Buscar producto, categoría…">
+        </div>
+        <div class="detalle-summary" id="table-footer"></div>
+      </div>
+      <div id="cards-container"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="empty-state">
+      <div class="empty-state-icon">📊</div>
+      <div class="empty-state-text">Seleccione un mes y cargue las ventas para ver el dashboard</div>
+    </div>
+
+  </main>
+
+  <div id="footer-container" data-footer-src="../Footer/footer.html"></div>
+
+  <script src="../Config/config.js"></script>
+  <script src="../Config/tables.js"></script>
+  <script src="../../main.js"></script>
+  <script src="../Footer/footer.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    var APP_CONFIG = window.APP_CONFIG;
+    var APP_TABLES = window.APP_TABLES;
+    var APP_SCRIPT_URL = APP_CONFIG && APP_CONFIG.APP_SCRIPT_URL;
+    var CORS_PROXY = APP_CONFIG && APP_CONFIG.CORS_PROXY;
+    var NOMBRES_MESES = (APP_TABLES && APP_TABLES.NOMBRES_HOJAS_MES) || [
+      'ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO',
+      'JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'
+    ];
+
+    var allData = [];
+    var filteredData = [];
+
+    var DONUT_COLORS = ['#C41E3A','#e84a67','#ff8fa3','#9b1730','#ffc1cc','#ff6b8a','#7a0022','#ffb3c1'];
+
+    function fmt(n) { return Number(n).toLocaleString('es-AR'); }
+    function fmtMoney(n) { return '$\u00a0' + Number(n).toLocaleString('es-AR', {minimumFractionDigits:0, maximumFractionDigits:0}); }
+
+    function getMesActual() {
+      var idx = new Date().getMonth();
+      return NOMBRES_MESES[idx] || NOMBRES_MESES[0];
+    }
+
+    function setStatus(type, text) {
+      var dot = document.getElementById('status-dot');
+      var msg = document.getElementById('ventas-meses-mensaje');
+      dot.className = 'status-dot' + (type ? ' status-dot--' + type : '');
+      msg.textContent = text;
+    }
+
+    function init() {
+      var sel = document.getElementById('ventas-meses-mes');
+      var btn = document.getElementById('ventas-meses-btn-cargar');
+      if (!sel || !btn) return;
+      NOMBRES_MESES.forEach(function(n) {
+        var o = document.createElement('option');
+        o.value = n; o.textContent = n;
+        sel.appendChild(o);
+      });
+      sel.value = getMesActual();
+      btn.addEventListener('click', cargar);
+      cargar();
+
+      var search = document.getElementById('table-search');
+      if (search) search.addEventListener('input', function() { renderTable(this.value); });
+    }
+
+    function cargar() {
+      var mes = document.getElementById('ventas-meses-mes').value;
+      if (!mes) { setStatus('error','Seleccione un mes.'); return; }
+      if (!APP_SCRIPT_URL) {
+        demoData(mes);
+        return;
+      }
+      setStatus('loading','Cargando ' + mes + '…');
+      var icon = document.getElementById('btn-icon');
+      if (icon) { icon.innerHTML = '<span class="loading-spinner"></span>'; }
+
+      var payload = { accion: 'ventaLeer', hoja: mes };
+      var body = 'data=' + encodeURIComponent(JSON.stringify(payload));
+      var url = (CORS_PROXY && CORS_PROXY.length > 0) ? CORS_PROXY + encodeURIComponent(APP_SCRIPT_URL) : APP_SCRIPT_URL;
+
+      fetch(url, { method:'POST', mode:'cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body })
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          var ct = (res.headers.get('Content-Type') || '').toLowerCase();
+          if (ct.indexOf('json') !== -1) return res.json();
+          return res.text().then(function(t){ try { return JSON.parse(t); } catch(e){ return {ok:false,error:t}; } });
+        })
+        .then(function(data) {
+          if (icon) icon.textContent = '↻';
+          if (data && data.ok && Array.isArray(data.datos)) {
+            processData(mes, data.datos);
+          } else {
+            setStatus('error', (data && (data.error||data.mensaje)) || 'Sin datos.');
+            hideAll();
+          }
+        })
+        .catch(function(err) {
+          if (icon) icon.textContent = '↻';
+          setStatus('error', 'Error de conexión: ' + (err.message||err));
+          hideAll();
+        });
+    }
+
+    function demoData(mes) {
+      var demo = [
+        {MES:mes,'ID-VENTA':'V-001',FECHA_OPERATIVA:'2026-02-22',HORA:'1899-12-30T13:30:00.000Z',CATEGORIA:'SANDWICH','ID-PRODUCTO':'PROD-001',PRODUCTO:'Lomito especial con papas',CANTIDAD:2,PRECIO:3500,MONTO:7000},
+        {MES:mes,'ID-VENTA':'V-002',FECHA_OPERATIVA:'2026-02-22',HORA:'1899-12-30T14:00:00.000Z',CATEGORIA:'SANDWICH','ID-PRODUCTO':'PROD-002',PRODUCTO:'Mila completo',CANTIDAD:1,PRECIO:3200,MONTO:3200},
+        {MES:mes,'ID-VENTA':'V-003',FECHA_OPERATIVA:'2026-02-22',HORA:'1899-12-30T14:30:00.000Z',CATEGORIA:'BEBIDA','ID-PRODUCTO':'PROD-019',PRODUCTO:'Coca Cola 500ml',CANTIDAD:3,PRECIO:800,MONTO:2400},
+        {MES:mes,'ID-VENTA':'V-004',FECHA_OPERATIVA:'2026-02-22',HORA:'1899-12-30T15:00:00.000Z',CATEGORIA:'SANDWICH','ID-PRODUCTO':'PROD-003',PRODUCTO:'Chorizo a la criolla',CANTIDAD:2,PRECIO:2800,MONTO:5600},
+        {MES:mes,'ID-VENTA':'V-005',FECHA_OPERATIVA:'2026-02-22',HORA:'1899-12-30T16:30:00.000Z',CATEGORIA:'EMPANADA','ID-PRODUCTO':'PROD-030',PRODUCTO:'Empanada de carne',CANTIDAD:6,PRECIO:600,MONTO:3600},
+        {MES:mes,'ID-VENTA':'V-006',FECHA_OPERATIVA:'2026-02-21',HORA:'1899-12-30T12:15:00.000Z',CATEGORIA:'SANDWICH','ID-PRODUCTO':'PROD-005',PRODUCTO:'Lomito EL TOTI con papas',CANTIDAD:1,PRECIO:4200,MONTO:4200},
+        {MES:mes,'ID-VENTA':'V-007',FECHA_OPERATIVA:'2026-02-21',HORA:'1899-12-30T13:45:00.000Z',CATEGORIA:'BEBIDA','ID-PRODUCTO':'PROD-020',PRODUCTO:'Mirinda 2 litros',CANTIDAD:2,PRECIO:1200,MONTO:2400},
+        {MES:mes,'ID-VENTA':'V-008',FECHA_OPERATIVA:'2026-02-20',HORA:'1899-12-30T11:00:00.000Z',CATEGORIA:'PROMOS','ID-PRODUCTO':'PROD-PROMO-01',PRODUCTO:'Combo mediodía',CANTIDAD:1,PRECIO:3800,MONTO:3800},
+      ];
+      processData(mes, demo);
+    }
+
+    function processData(mes, datos) {
+      allData = datos;
+      filteredData = datos;
+      document.getElementById('titulo-mes').textContent = mes;
+      updateKPIs(datos);
+      renderCharts(datos);
+      renderTable('');
+      setStatus('ok', datos.length + ' registro(s) de ' + mes);
+      document.getElementById('empty-state').hidden = true;
+    }
+
+    function hideAll() {
+      document.getElementById('kpi-grid').hidden = true;
+      document.getElementById('charts-row').hidden = true;
+      document.getElementById('table-section').hidden = true;
+      document.getElementById('empty-state').hidden = false;
+    }
+
+    function updateKPIs(datos) {
+      var total = datos.reduce(function(s,r){ return s + (parseFloat(r.MONTO)||0); }, 0);
+      var unidades = datos.reduce(function(s,r){ return s + (parseFloat(r.CANTIDAD)||0); }, 0);
+      var ventas = datos.length;
+      var ids = {};
+      datos.forEach(function(r){ if(r['ID-VENTA']) ids[r['ID-VENTA']]=1; });
+      var uniqueVentas = Object.keys(ids).length || ventas;
+      var ticket = uniqueVentas ? (total / uniqueVentas) : 0;
+
+      document.getElementById('kpi-total').textContent = fmtMoney(total);
+      document.getElementById('kpi-total-sub').textContent = 'acumulado del mes';
+      document.getElementById('kpi-ventas').textContent = fmt(uniqueVentas);
+      document.getElementById('kpi-ventas-sub').textContent = uniqueVentas + ' órdenes únicas';
+      document.getElementById('kpi-unidades').textContent = fmt(unidades);
+      document.getElementById('kpi-unidades-sub').textContent = 'productos despachados';
+      document.getElementById('kpi-ticket').textContent = fmtMoney(ticket);
+      document.getElementById('kpi-ticket-sub').textContent = 'por orden promedio';
+
+      document.getElementById('kpi-grid').hidden = false;
+    }
+
+    function renderCharts(datos) {
+      renderBarChart(datos);
+      renderDonut(datos);
+      document.getElementById('charts-row').hidden = false;
+    }
+
+    function renderBarChart(datos) {
+      var prodMap = {};
+      datos.forEach(function(r) {
+        var p = r.PRODUCTO || r['ID-PRODUCTO'] || '?';
+        if (!prodMap[p]) prodMap[p] = { monto:0, qty:0 };
+        prodMap[p].monto += parseFloat(r.MONTO)||0;
+        prodMap[p].qty += parseFloat(r.CANTIDAD)||0;
+      });
+      var sorted = Object.keys(prodMap).map(function(k){ return {name:k, monto:prodMap[k].monto, qty:prodMap[k].qty}; });
+      sorted.sort(function(a,b){ return b.monto - a.monto; });
+      var top = sorted.slice(0,7);
+      var maxMonto = top[0] ? top[0].monto : 1;
+
+      var container = document.getElementById('bar-chart');
+      container.innerHTML = '';
+      top.forEach(function(item) {
+        var pct = maxMonto ? (item.monto / maxMonto * 100) : 0;
+        var row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML =
+          '<div class="bar-label" title="' + item.name + '">' + item.name + '</div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:0%" data-w="' + pct + '%"></div>' +
+          '<span class="bar-val">' + fmtMoney(item.monto) + '</span></div>' +
+          '<div class="bar-count">×' + fmt(item.qty) + '</div>';
+        container.appendChild(row);
+      });
+      setTimeout(function() {
+        container.querySelectorAll('.bar-fill').forEach(function(el) {
+          el.style.width = el.getAttribute('data-w');
+        });
+      }, 60);
+    }
+
+    function renderDonut(datos) {
+      var catMap = {};
+      datos.forEach(function(r) {
+        var c = r.CATEGORIA || 'OTRO';
+        catMap[c] = (catMap[c]||0) + (parseFloat(r.MONTO)||0);
+      });
+      var cats = Object.keys(catMap).map(function(k){ return {name:k, val:catMap[k]}; });
+      cats.sort(function(a,b){ return b.val - a.val; });
+      var total = cats.reduce(function(s,c){ return s+c.val; },0);
+
+      var svg = document.getElementById('donut-svg');
+      svg.innerHTML = '';
+      var cx=65, cy=65, r=48, ir=32, tau=2*Math.PI;
+      var start = -Math.PI/2;
+      cats.forEach(function(cat,i) {
+        var angle = (cat.val/total)*tau;
+        var end = start + angle;
+        var x1=cx+r*Math.cos(start), y1=cy+r*Math.sin(start);
+        var x2=cx+r*Math.cos(end), y2=cy+r*Math.sin(end);
+        var ix1=cx+ir*Math.cos(end), iy1=cy+ir*Math.sin(end);
+        var ix2=cx+ir*Math.cos(start), iy2=cy+ir*Math.sin(start);
+        var large = angle > Math.PI ? 1 : 0;
+        var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d',
+          'M'+x1+','+y1+' A'+r+','+r+' 0 '+large+',1 '+x2+','+y2+
+          ' L'+ix1+','+iy1+' A'+ir+','+ir+' 0 '+large+',0 '+ix2+','+iy2+' Z');
+        path.setAttribute('fill', DONUT_COLORS[i % DONUT_COLORS.length]);
+        path.setAttribute('stroke','#fff'); path.setAttribute('stroke-width','2');
+        svg.appendChild(path);
+        start = end;
+      });
+
+      document.getElementById('donut-center-val').textContent = cats.length;
+      var legend = document.getElementById('donut-legend');
+      legend.innerHTML = '';
+      cats.forEach(function(cat,i) {
+        var pct = total ? Math.round(cat.val/total*100) : 0;
+        var el = document.createElement('div');
+        el.className = 'legend-item';
+        el.innerHTML =
+          '<div class="legend-dot" style="background:' + DONUT_COLORS[i%DONUT_COLORS.length] + '"></div>' +
+          '<div class="legend-name">' + cat.name + '</div>' +
+          '<div class="legend-pct">' + pct + '%</div>';
+        legend.appendChild(el);
+      });
+    }
+
+    var DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    var MESES_CORTOS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    function fmtFechaLegible(fechaStr) {
+      var clean = String(fechaStr).split('T')[0].replace(/\//g,'-');
+      var parts = clean.split('-');
+      if (parts.length < 3) return fechaStr;
+      var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+      if (isNaN(d.getTime())) return fechaStr;
+      return DIAS[d.getDay()] + ' ' + d.getDate() + ' de ' + MESES_CORTOS[d.getMonth()] + ' ' + d.getFullYear();
+    }
+
+    function fmtDayNum(fechaStr) {
+      var clean = String(fechaStr).split('T')[0].replace(/\//g,'-');
+      var parts = clean.split('-');
+      if (parts.length < 3) return '?';
+      return parseInt(parts[2], 10);
+    }
+
+    function fmtHoraCard(horaStr) {
+      if (!horaStr) return '';
+      var s = String(horaStr);
+      var tIdx = s.indexOf('T');
+      if (tIdx !== -1) {
+        var d = new Date(horaStr);
+        if (!isNaN(d.getTime())) {
+          var h = d.getHours();
+          var m = d.getMinutes();
+          return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2);
+        }
+        return s.substring(tIdx+1, tIdx+6);
+      }
+      return s.substring(0,5);
+    }
+
+    function badgeClass(cat) {
+      var c = String(cat).toLowerCase();
+      if (c.indexOf('promo')!==-1) return 'badge-cat badge-cat--promos';
+      if (c.indexOf('bebida')!==-1) return 'badge-cat badge-cat--bebida';
+      if (c.indexOf('empanada')!==-1) return 'badge-cat badge-cat--empanada';
+      if (c.indexOf('postre')!==-1) return 'badge-cat badge-cat--postre';
+      if (c.indexOf('sandwich')!==-1 || c.indexOf('sándwich')!==-1) return 'badge-cat';
+      return 'badge-cat badge-cat--otro';
+    }
+
+    function getFechaKey(row) {
+      var f = row.FECHA_OPERATIVA || row.FECHA || '';
+      return String(f).split('T')[0].replace(/\//g,'-');
+    }
+
+    function renderTable(search) {
+      var s = (search||'').toLowerCase().trim();
+      filteredData = s ? allData.filter(function(r) {
+        var searchable = [r.PRODUCTO, r.CATEGORIA, r['ID-VENTA'], r['ID-PRODUCTO'], r.FECHA_OPERATIVA, r.MES].join(' ');
+        return searchable.toLowerCase().indexOf(s) !== -1;
+      }) : allData;
+
+      var grupos = {};
+      var ordenFechas = [];
+      filteredData.forEach(function(row) {
+        var key = getFechaKey(row);
+        if (!grupos[key]) { grupos[key] = []; ordenFechas.push(key); }
+        grupos[key].push(row);
+      });
+      ordenFechas = ordenFechas.filter(function(v,i,a){ return a.indexOf(v)===i; });
+      ordenFechas.sort(function(a,b){ return b.localeCompare(a); });
+
+      var container = document.getElementById('cards-container');
+      container.innerHTML = '';
+
+      if (filteredData.length === 0) {
+        container.innerHTML = '<div class="no-results">No se encontraron ventas con ese criterio de búsqueda.</div>';
+      } else {
+        ordenFechas.forEach(function(fechaKey, gi) {
+          var rows = grupos[fechaKey];
+          var totalDia = rows.reduce(function(s,r){ return s+(parseFloat(r.MONTO)||0); },0);
+          var unidadesDia = rows.reduce(function(s,r){ return s+(parseFloat(r.CANTIDAD)||0); },0);
+          var labelFecha = fechaKey ? fmtFechaLegible(fechaKey) : 'Sin fecha';
+          var dayNum = fechaKey ? fmtDayNum(fechaKey) : '?';
+
+          var groupEl = document.createElement('div');
+          groupEl.className = 'date-group';
+          groupEl.style.animationDelay = (gi * 0.05) + 's';
+
+          var hdr = '<div class="date-group-header">' +
+            '<div class="date-pill">' +
+              '<div class="date-pill-icon">' + dayNum + '</div>' +
+              '<div><div class="date-pill-text">' + labelFecha + '</div></div>' +
+            '</div>' +
+            '<div class="date-group-stats">' +
+              '<span>' + rows.length + ' venta' + (rows.length!==1?'s':'') + '</span>' +
+              '<span>·</span>' +
+              '<span>' + fmt(unidadesDia) + ' unid.</span>' +
+              '<span>·</span>' +
+              '<span>Total <strong>' + fmtMoney(totalDia) + '</strong></span>' +
+            '</div>' +
+          '</div>';
+
+          var grid = '<div class="cards-grid">';
+          rows.forEach(function(row, ci) {
+            var producto = row.PRODUCTO || row['ID-PRODUCTO'] || '—';
+            var idVenta = row['ID-VENTA'] || '—';
+            var idProd = row['ID-PRODUCTO'] || '—';
+            var categoria = row.CATEGORIA || '—';
+            var cantidad = row.CANTIDAD !== undefined ? row.CANTIDAD : '—';
+            var precio = row.PRECIO !== undefined ? fmtMoney(parseFloat(row.PRECIO)||0) : '—';
+            var monto = row.MONTO !== undefined ? fmtMoney(parseFloat(row.MONTO)||0) : '—';
+            var hora = fmtHoraCard(row.HORA || '');
+
+            grid += '<div class="venta-card" style="animation-delay:' + ((gi*0.05)+(ci*0.03)) + 's">' +
+              '<div class="card-top">' +
+                '<div class="card-top-left">' +
+                  '<div class="card-producto" title="' + producto + '">' + producto + '</div>' +
+                  '<div class="card-id">' + idVenta + '</div>' +
+                '</div>' +
+                '<div class="card-monto">' + monto + '</div>' +
+              '</div>' +
+              '<div class="card-body">' +
+                '<div class="card-field">' +
+                  '<div class="card-field-label">Categoría</div>' +
+                  '<div class="card-field-value"><span class="' + badgeClass(categoria) + '">' + categoria + '</span></div>' +
+                '</div>' +
+                '<div class="card-field">' +
+                  '<div class="card-field-label">ID Producto</div>' +
+                  '<div class="card-field-value card-field-value--mono">' + idProd + '</div>' +
+                '</div>' +
+                '<div class="card-field">' +
+                  '<div class="card-field-label">Cantidad</div>' +
+                  '<div class="card-field-value card-field-value--mono">' + cantidad + ' ud.</div>' +
+                '</div>' +
+                '<div class="card-field">' +
+                  '<div class="card-field-label">Precio unit.</div>' +
+                  '<div class="card-field-value card-field-value--mono">' + precio + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="card-footer">' +
+                '<div class="card-hora">' +
+                  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+                  (hora ? hora + ' hs' : 'Sin hora') +
+                '</div>' +
+                '<div class="card-field-value card-field-value--accent" style="font-size:0.78rem">' + monto + '</div>' +
+              '</div>' +
+            '</div>';
+          });
+          grid += '</div>';
+          groupEl.innerHTML = hdr + grid;
+          container.appendChild(groupEl);
+        });
+      }
+
+      var footer = document.getElementById('table-footer');
+      var totalFilt = filteredData.reduce(function(s,r){ return s+(parseFloat(r.MONTO)||0); },0);
+      footer.innerHTML =
+        '<strong>' + filteredData.length + '</strong> registro' + (filteredData.length!==1?'s':'') +
+        (s ? ' filtrados' : '') + ' · ' +
+        ordenFechas.length + ' día' + (ordenFechas.length!==1?'s':'') + ' · ' +
+        'Total: <strong>' + fmtMoney(totalFilt) + '</strong>';
+
+      document.getElementById('table-section').hidden = false;
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else { init(); }
+  })();
+  </script>
+</body>
+</html>

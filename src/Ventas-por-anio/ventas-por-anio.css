@@ -1,0 +1,115 @@
+/* Ventas por año */
+.ventas-anio__filtro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.ventas-anio__filtro label {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.ventas-anio__select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  background: var(--color-surface);
+  min-width: 8rem;
+}
+
+.ventas-anio__btn-cargar {
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ventas-anio__btn-cargar:hover {
+  background: var(--color-primary-dark);
+}
+
+.ventas-anio__mensaje {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.ventas-anio__mensaje--error {
+  color: var(--color-primary);
+}
+
+.ventas-anio__subtitulo {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.ventas-anio__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ventas-anio__card {
+  background: var(--color-surface);
+  border: 1px solid #eee;
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.ventas-anio__card-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.ventas-anio__card-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.ventas-anio__tabla-scroll {
+  overflow-x: auto;
+  border: 1px solid #eee;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.ventas-anio__tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ventas-anio__tabla th,
+.ventas-anio__tabla td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.ventas-anio__tabla th {
+  background: rgba(196, 30, 58, 0.08);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.ventas-anio__tabla .ventas-anio__th-num,
+.ventas-anio__tabla td.ventas-anio__th-num {
+  text-align: right;
+}
+
+.ventas-anio__tabla tbody tr:hover {
+  background: #fafafa;
+}

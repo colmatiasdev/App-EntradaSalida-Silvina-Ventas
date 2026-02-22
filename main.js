@@ -14,6 +14,12 @@
       if (path.indexOf('ventas-por-meses') !== -1 && href.indexOf('ventas-por-meses') !== -1) {
         link.classList.add('nav__link--active');
       }
+      if (path.indexOf('dashboard-mensual') !== -1 && href.indexOf('dashboard-mensual') !== -1) {
+        link.classList.add('nav__link--active');
+      }
+      if (path.indexOf('ventas-por-anio') !== -1 && href.indexOf('ventas-por-anio') !== -1) {
+        link.classList.add('nav__link--active');
+      }
     });
     // Si estamos en index, marcar según hash o dejar la primera
     if (path.endsWith('/') || path.endsWith('index.html') || path === '') {
