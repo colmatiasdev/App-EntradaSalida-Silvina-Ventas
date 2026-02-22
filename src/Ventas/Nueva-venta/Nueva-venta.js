@@ -3,28 +3,12 @@
 
   var TABLA = window.APP_TABLES && window.APP_TABLES.PRODUCTOS;
   var TABLA_VENTAS = window.APP_TABLES && window.APP_TABLES.VENTAS;
-  var CSV_URL = window.APP_CONFIG && window.APP_CONFIG.GOOGLE_SHEET_CSV_URL;
   var APP_SCRIPT_URL = window.APP_CONFIG && window.APP_CONFIG.APP_SCRIPT_URL;
   var CORS_PROXY = window.APP_CONFIG && window.APP_CONFIG.CORS_PROXY;
+  var HOJA_PRODUCTOS = (window.APP_CONFIG && window.APP_CONFIG.HOJA_PRODUCTOS) || 'PRODUCTOS';
   var NEGOCIO = window.APP_NEGOCIO;
   var productos = [];
   var carrito = [];
-
-  function parseCSV(texto) {
-    var lineas = texto.trim().split(/\r?\n/);
-    if (lineas.length < 2) return [];
-    var cols = lineas[0].split(',').map(function (c) { return c.trim(); });
-    var filas = [];
-    for (var i = 1; i < lineas.length; i++) {
-      var vals = lineas[i].split(',').map(function (v) { return v.trim(); });
-      var obj = {};
-      cols.forEach(function (col, j) {
-        obj[col] = vals[j] !== undefined ? vals[j] : '';
-      });
-      filas.push(obj);
-    }
-    return filas;
-  }
 
   function normalizarProductos(filas) {
     var cols = TABLA.columns;
@@ -81,61 +65,37 @@
       pintarListado();
     }
 
-    // Preferir Apps Script (tabla PRODUCTOS) para tener la columna CATEGORIA correcta
-    if (APP_SCRIPT_URL) {
-      var payload = { accion: 'productoLeer' };
-      var bodyForm = 'data=' + encodeURIComponent(JSON.stringify(payload));
-      var url = (CORS_PROXY && CORS_PROXY.length) ? CORS_PROXY + encodeURIComponent(APP_SCRIPT_URL) : APP_SCRIPT_URL;
-      fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: bodyForm
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          var ct = res.headers.get('Content-Type') || '';
-          if (ct.indexOf('json') !== -1) return res.json();
-          return res.text().then(function (t) {
-            try { return JSON.parse(t); } catch (e) { return { ok: false, datos: [] }; }
-          });
-        })
-        .then(function (data) {
-          if (data && data.ok && Array.isArray(data.datos)) {
-            aplicarProductosYFiltro(data.datos);
-          } else {
-            throw new Error(data && data.error ? data.error : 'Sin datos');
-          }
-        })
-        .catch(function () {
-          if (CSV_URL) cargarProductosCSV(aplicarProductosYFiltro);
-          else mensaje.textContent = 'No se pudieron cargar los productos. Revisa APP_SCRIPT_URL o GOOGLE_SHEET_CSV_URL.';
+    // Los productos se consumen solo desde la hoja PRODUCTOS vía Apps Script (productoLeer).
+    if (!APP_SCRIPT_URL) {
+      mensaje.textContent = 'Configura APP_SCRIPT_URL en config.js. Los productos se cargan de la hoja "' + HOJA_PRODUCTOS + '" del Sheet.';
+      return;
+    }
+    var payload = { accion: 'productoLeer' };
+    var bodyForm = 'data=' + encodeURIComponent(JSON.stringify(payload));
+    var url = (CORS_PROXY && CORS_PROXY.length) ? CORS_PROXY + encodeURIComponent(APP_SCRIPT_URL) : APP_SCRIPT_URL;
+    fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: bodyForm
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var ct = res.headers.get('Content-Type') || '';
+        if (ct.indexOf('json') !== -1) return res.json();
+        return res.text().then(function (t) {
+          try { return JSON.parse(t); } catch (e) { return { ok: false, datos: [] }; }
         });
-      return;
-    }
-
-    if (CSV_URL) {
-      cargarProductosCSV(aplicarProductosYFiltro);
-    } else {
-      mensaje.textContent = 'Configura APP_SCRIPT_URL o GOOGLE_SHEET_CSV_URL en config.js.';
-    }
-  }
-
-  function cargarProductosCSV(callback) {
-    var mensaje = document.getElementById('nueva-venta-mensaje');
-    if (!CSV_URL) {
-      if (callback) callback([]);
-      return;
-    }
-    fetch(CSV_URL)
-      .then(function (res) { return res.text(); })
-      .then(function (csv) {
-        var filas = parseCSV(csv);
-        callback(filas);
       })
-      .catch(function () {
-        mensaje.textContent = 'No se pudieron cargar los productos. Revisa la URL del Sheet.';
-        if (callback) callback([]);
+      .then(function (data) {
+        if (data && data.ok && Array.isArray(data.datos)) {
+          aplicarProductosYFiltro(data.datos);
+        } else {
+          throw new Error(data && data.error ? data.error : 'Sin datos');
+        }
+      })
+      .catch(function (err) {
+        mensaje.textContent = 'No se pudieron cargar los productos desde la hoja "' + HOJA_PRODUCTOS + '". Revisa APP_SCRIPT_URL y que el Sheet tenga la hoja "' + HOJA_PRODUCTOS + '".';
       });
   }
 
