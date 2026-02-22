@@ -23,9 +23,17 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    var params = e.postData && e.postData.contents
-      ? JSON.parse(e.postData.contents)
-      : {};
+    var params = {};
+    if (e.postData && e.postData.contents) {
+      var raw = e.postData.contents;
+      var dataIdx = raw.indexOf('data=');
+      if (dataIdx !== -1) {
+        var jsonStr = decodeURIComponent(raw.substring(dataIdx + 5).replace(/\+/g, ' '));
+        params = JSON.parse(jsonStr);
+      } else if (raw.trim().indexOf('{') === 0) {
+        params = JSON.parse(raw);
+      }
+    }
     var accion = params.accion || '';
 
     if (accion === 'guardarVenta') {

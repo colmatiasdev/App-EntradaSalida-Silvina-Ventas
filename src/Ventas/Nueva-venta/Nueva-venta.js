@@ -215,13 +215,25 @@
     var msgGuardar = document.getElementById('nueva-venta-guardar-msg');
     if (btnGuardar) btnGuardar.disabled = true;
     if (msgGuardar) { msgGuardar.textContent = 'Guardando…'; msgGuardar.className = 'nueva-venta__guardar-msg'; }
+    var bodyForm = 'data=' + encodeURIComponent(JSON.stringify(payload));
     fetch(APP_SCRIPT_URL, {
       method: 'POST',
       mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: bodyForm
     })
-      .then(function (res) { return res.json ? res.json() : res.text(); })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var ct = res.headers.get('Content-Type') || '';
+        if (ct.indexOf('json') !== -1) return res.json();
+        return res.text().then(function (t) {
+          try {
+            return JSON.parse(t);
+          } catch (err) {
+            return { ok: false, error: t };
+          }
+        });
+      })
       .then(function (data) {
         var ok = data && (data.ok === true || data.success === true);
         if (ok) {
@@ -233,7 +245,15 @@
         }
       })
       .catch(function (err) {
-        mostrarMensajeGuardar('Error de conexión. Revisa APP_SCRIPT_URL y que el Web App esté desplegado.', true);
+        var msg = err && err.message ? err.message : String(err);
+        if (/failed to fetch|networkerror|cors/i.test(msg)) {
+          mostrarMensajeGuardar(
+            'No se pudo leer la respuesta (CORS). Revisa el Sheet: si la venta apareció, se guardó. Si no, abre la consola (F12) y comprueba la URL.',
+            true
+          );
+        } else {
+          mostrarMensajeGuardar('Error: ' + msg, true);
+        }
       })
       .then(function () {
         if (btnGuardar) btnGuardar.disabled = carrito.length === 0;
