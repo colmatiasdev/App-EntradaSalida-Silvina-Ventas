@@ -63,7 +63,16 @@ function guardarVenta(params) {
     return respuestaJson({ ok: false, error: 'Falta detalle de ítems.' });
   }
 
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  if (!SPREADSHEET_ID || SPREADSHEET_ID.indexOf('REEMPLAZAR') !== -1 || SPREADSHEET_ID.length < 40) {
+    return respuestaJson({ ok: false, error: 'Configura SPREADSHEET_ID en Code.gs con el ID de tu Google Sheet (ver URL del documento).' });
+  }
+
+  var ss;
+  try {
+    ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  } catch (err) {
+    return respuestaJson({ ok: false, error: 'No se pudo abrir el Sheet. Revisa que SPREADSHEET_ID sea correcto y que el script tenga acceso al documento.' });
+  }
   var sheet = obtenerOCrearHoja(ss, hojaNombre);
 
   if (sheet.getLastRow() === 0) {
