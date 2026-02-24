@@ -40,25 +40,19 @@
         var p = {};
         cols.forEach(function (c) {
           var val = claveEnFila(f, c);
-          if (c === 'PRECIO-MAYORISTA' || c === 'PRECIO-DISTRIBUIDOR') {
+          if (c === 'PRECIO') {
             p[c] = Number(val) || 0;
           } else {
             p[c] = val !== undefined && val !== null ? String(val).trim() : '';
           }
         });
-        var precioMay = Number(claveEnFila(f, 'PRECIO-MAYORISTA')) || 0;
-        var precioDist = Number(claveEnFila(f, 'PRECIO-DISTRIBUIDOR')) || 0;
-        p.PRECIO = precioMay || precioDist;
+        p.PRECIO = Number(claveEnFila(f, 'PRECIO')) || 0;
         return p;
       });
   }
 
   function getPrecioParaCliente(p) {
-    if (!clienteSeleccionado) return p.PRECIO || p['PRECIO-MAYORISTA'] || 0;
-    var tipo = (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').toUpperCase();
-    if (tipo === 'DISTRIBUIDOR' && (p['PRECIO-DISTRIBUIDOR'] !== undefined && p['PRECIO-DISTRIBUIDOR'] !== ''))
-      return Number(p['PRECIO-DISTRIBUIDOR']) || 0;
-    return Number(p['PRECIO-MAYORISTA']) || Number(p['PRECIO-DISTRIBUIDOR']) || 0;
+    return Number(p.PRECIO) || 0;
   }
 
   function aplicarPreciosSegunCliente() {
@@ -67,28 +61,9 @@
     });
   }
 
-  function llenarSelectCategoria() {
-    var selectCat = document.getElementById('nueva-venta-categoria');
-    if (!selectCat) return;
-    selectCat.innerHTML = '<option value="">Todas</option>';
-    // Categorías definidas en config (configurable); si no hay, se derivan de los productos cargados
-    var categoriasConfig = (window.APP_CONFIG && window.APP_CONFIG.CATEGORIAS) || [];
-    var categorias = categoriasConfig.length
-      ? categoriasConfig.filter(function (c) { return c != null && String(c).trim() !== ''; })
-      : [];
-    if (categorias.length === 0) {
-      productos.forEach(function (p) {
-        var cat = (p.CATEGORIA || '').trim();
-        if (cat && categorias.indexOf(cat) === -1) categorias.push(cat);
-      });
-      categorias.sort();
-    }
-    categorias.forEach(function (cat) {
-      var opt = document.createElement('option');
-      opt.value = typeof cat === 'string' ? cat : String(cat);
-      opt.textContent = opt.value;
-      selectCat.appendChild(opt);
-    });
+  function getTextoBusqueda() {
+    var input = document.getElementById('nueva-venta-buscar');
+    return (input && input.value) ? input.value.trim() : '';
   }
 
   function cargarProductos() {
@@ -102,7 +77,6 @@
       productos = normalizarProductos(filas);
       aplicarPreciosSegunCliente();
       mensaje.textContent = '';
-      llenarSelectCategoria();
       pintarListado();
     }
 
@@ -143,20 +117,23 @@
   function pintarListado() {
     var contenedor = document.getElementById('nueva-venta-productos');
     if (!contenedor) return;
-    var catFiltro = (document.getElementById('nueva-venta-categoria') || {}).value || '';
-    var catFiltroNorm = (catFiltro || '').trim().toUpperCase();
-    // Agrupar por categoría (clave normalizada en mayúsculas para que coincida con el combo)
+    var textoBusqueda = getTextoBusqueda().toUpperCase();
+    var listado = productos;
+    if (textoBusqueda) {
+      listado = productos.filter(function (p) {
+        var nombre = (p['NOMBRE-PRODUCTO'] || '').toUpperCase();
+        var categoria = (p.CATEGORIA || '').toUpperCase();
+        return nombre.indexOf(textoBusqueda) !== -1 || categoria.indexOf(textoBusqueda) !== -1;
+      });
+    }
     var porCategoria = {};
-    productos.forEach(function (p) {
+    listado.forEach(function (p) {
       var c = (p.CATEGORIA || '').trim() || 'Otros';
       var cNorm = c.toUpperCase();
       if (!porCategoria[cNorm]) porCategoria[cNorm] = { label: c, items: [] };
       porCategoria[cNorm].items.push(p);
     });
     var categoriasOrden = Object.keys(porCategoria).sort();
-    if (catFiltroNorm) {
-      categoriasOrden = categoriasOrden.filter(function (c) { return c === catFiltroNorm; });
-    }
     contenedor.innerHTML = '';
     categoriasOrden.forEach(function (categoriaNorm) {
       var grupo = porCategoria[categoriaNorm];
@@ -408,30 +385,32 @@
   function aplicarClienteEnPantalla() {
     var bloqueCliente = document.getElementById('nueva-venta-cliente-info');
     var tipoEl = document.getElementById('nueva-venta-cliente-tipo');
-    if (!clienteSeleccionado) return;
-    var nombre = (clienteSeleccionado['NOMBRE-APELLIDO'] || '').trim();
-    var tipoLista = (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim();
     if (bloqueCliente) {
-      bloqueCliente.querySelector('.nueva-venta__cliente-nombre').textContent = nombre || '(Sin nombre)';
       bloqueCliente.classList.add('nueva-venta__cliente-info--visible');
+      var nombreEl = bloqueCliente.querySelector('.nueva-venta__cliente-nombre');
+      if (nombreEl) nombreEl.textContent = clienteSeleccionado ? ((clienteSeleccionado['NOMBRE-APELLIDO'] || '').trim() || '(Sin nombre)') : 'Sin cliente';
     }
-    if (tipoEl) tipoEl.textContent = tipoLista ? ' · ' + tipoLista : '';
+    if (tipoEl) tipoEl.textContent = clienteSeleccionado ? ((clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim() ? ' · ' + (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim() : '') : '';
   }
 
   function init() {
     try {
       var raw = sessionStorage.getItem(STORAGE_KEY_CLIENTE);
-      if (!raw) {
-        window.location.href = '../Seleccionar-cliente/seleccionar-cliente.html?volver=Nueva-venta';
-        return;
-      }
-      clienteSeleccionado = JSON.parse(raw);
+      if (raw) clienteSeleccionado = JSON.parse(raw);
     } catch (e) {
-      window.location.href = '../Seleccionar-cliente/seleccionar-cliente.html?volver=Nueva-venta';
-      return;
+      clienteSeleccionado = null;
     }
     aplicarClienteEnPantalla();
-    document.getElementById('nueva-venta-categoria').addEventListener('change', pintarListado);
+    var inputBuscar = document.getElementById('nueva-venta-buscar');
+    var btnLimpiar = document.getElementById('nueva-venta-limpiar-busqueda');
+    if (inputBuscar) inputBuscar.addEventListener('input', pintarListado);
+    if (btnLimpiar) {
+      btnLimpiar.addEventListener('click', function () {
+        if (inputBuscar) inputBuscar.value = '';
+        pintarListado();
+        inputBuscar && inputBuscar.focus();
+      });
+    }
     var btnGuardar = getBtnGuardar();
     if (btnGuardar) btnGuardar.addEventListener('click', guardarVenta);
     cargarProductos();

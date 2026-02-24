@@ -6,7 +6,7 @@
  * IMPORTANTE: SPREADSHEET_ID debe ser el mismo que en config.js. Este script debe estar
  * vinculado al mismo Google Sheet que usa la app (o pegar aquí el ID de ese Sheet).
  *
- * Tablas (hojas): CLIENTES, PRODUCTOS, ENERO..DICIEMBRE, RESUMEN-VENTAS.
+ * Tablas (hojas): CLIENTES, PRODUCTOS, ENERO..DICIEMBRE, RESUMEN-VENTAS, RESUMEN-OPERATIVO.
  * Columnas según TABLAS más abajo (coincidir con src/Config/tables.js).
  */
 
@@ -23,7 +23,7 @@ var TABLAS = {
   PRODUCTOS: {
     sheet: 'PRODUCTOS',
     pk: 'ID-PRODUCTO',
-    columns: ['ID-PRODUCTO', 'CATEGORIA', 'NOMBRE-PRODUCTO', 'PRECIO-MAYORISTA', 'PRECIO-DISTRIBUIDOR', 'HABILITADO']
+    columns: ['ID-PRODUCTO', 'COMERCIO-SUCURSAL', 'CATEGORIA', 'NOMBRE-PRODUCTO', 'PRECIO', 'HABILITADO']
   },
   ENERO: {
     sheet: 'ENERO',
@@ -45,6 +45,11 @@ var TABLAS = {
     sheet: 'RESUMEN-VENTAS',
     pk: 'MES',
     columns: ['MES', 'DIA', 'CATEGORIA', 'NOMBRE-PRODUCTO', 'CANTIDAD', 'MONTO']
+  },
+  RESUMEN_OPERATIVO: {
+    sheet: 'RESUMEN-OPERATIVO',
+    pk: 'ID-RESUMEN',
+    columns: ['ID-RESUMEN', 'FECHA_OPERATIVA', 'HORA', 'CORRESPONDE-A', 'TIPO-OPERACION', 'CATEGORIA', 'IMPORTE']
   }
 };
 
@@ -75,6 +80,10 @@ function doPost(e) {
       case 'resumenBaja':       return resumenBaja(params);
       case 'resumenModificacion': return resumenModificacion(params);
       case 'resumenLeer':       return resumenLeer(params);
+      case 'resumenOperativoAlta':       return resumenOperativoAlta(params);
+      case 'resumenOperativoBaja':       return resumenOperativoBaja(params);
+      case 'resumenOperativoModificacion': return resumenOperativoModificacion(params);
+      case 'resumenOperativoLeer':       return resumenOperativoLeer(params);
       default:
         return respuestaJson({ ok: false, error: 'Acción no reconocida: ' + accion });
     }
@@ -521,6 +530,78 @@ function resumenLeer(params) {
     filas.push(obj);
   }
   if (mes) filas = filas.filter(function (f) { return String(f.MES) === String(mes); });
+  return respuestaJson({ ok: true, datos: filas });
+}
+
+// --- RESUMEN-OPERATIVO ---
+
+function resumenOperativoAlta(params) {
+  var def = TABLAS.RESUMEN_OPERATIVO;
+  var dato = params.dato || params;
+  if (!dato[def.pk]) return respuestaJson({ ok: false, error: 'Falta ' + def.pk });
+  var ss = getSS();
+  var sheet = getHoja(ss, def.sheet, def.columns);
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, def.columns.length).setValues([def.columns]);
+    sheet.getRange(1, 1, 1, def.columns.length).setFontWeight('bold');
+  }
+  var fila = objetoAFila(def, dato);
+  var rowNum = buscarFilaPorPK(sheet, def, dato[def.pk]);
+  if (rowNum > 0) return respuestaJson({ ok: false, error: 'Ya existe un registro con ese ' + def.pk });
+  sheet.appendRow(fila);
+  return respuestaJson({ ok: true, mensaje: 'Resumen operativo dado de alta.' });
+}
+
+function resumenOperativoBaja(params) {
+  var def = TABLAS.RESUMEN_OPERATIVO;
+  var pkValor = params[def.pk] || params.id;
+  if (!pkValor) return respuestaJson({ ok: false, error: 'Falta ' + def.pk });
+  var ss = getSS();
+  var sheet = ss.getSheetByName(def.sheet);
+  if (!sheet) return respuestaJson({ ok: false, error: 'No existe la hoja ' + def.sheet });
+  var rowNum = buscarFilaPorPK(sheet, def, pkValor);
+  if (rowNum === -1) return respuestaJson({ ok: false, error: 'No encontrado.' });
+  sheet.deleteRow(rowNum);
+  return respuestaJson({ ok: true, mensaje: 'Resumen operativo dado de baja.' });
+}
+
+function resumenOperativoModificacion(params) {
+  var def = TABLAS.RESUMEN_OPERATIVO;
+  var dato = params.dato || params;
+  if (!dato[def.pk]) return respuestaJson({ ok: false, error: 'Falta ' + def.pk });
+  var ss = getSS();
+  var sheet = ss.getSheetByName(def.sheet);
+  if (!sheet) return respuestaJson({ ok: false, error: 'No existe la hoja ' + def.sheet });
+  var rowNum = buscarFilaPorPK(sheet, def, dato[def.pk]);
+  if (rowNum === -1) return respuestaJson({ ok: false, error: 'No encontrado.' });
+  var fila = objetoAFila(def, dato);
+  sheet.getRange(rowNum, 1, rowNum, def.columns.length).setValues([fila]);
+  return respuestaJson({ ok: true, mensaje: 'Resumen operativo actualizado.' });
+}
+
+function resumenOperativoLeer(params) {
+  var def = TABLAS.RESUMEN_OPERATIVO;
+  var ss = getSS();
+  var sheet = ss.getSheetByName(def.sheet);
+  if (!sheet) return respuestaJson({ ok: true, datos: [] });
+  var datos = sheet.getDataRange().getValues();
+  if (datos.length < 2) return respuestaJson({ ok: true, datos: [] });
+  var headers = datos[0];
+  var filas = [];
+  for (var i = 1; i < datos.length; i++) {
+    var obj = {};
+    for (var c = 0; c < headers.length; c++) {
+      var val = datos[i][c];
+      obj[headers[c]] = (val !== undefined && val !== null) ? val : '';
+    }
+    var pkVal = (obj[def.pk] !== undefined && obj[def.pk] !== null) ? String(obj[def.pk]).trim() : '';
+    if (pkVal === '') continue;
+    filas.push(obj);
+  }
+  var id = params[def.pk] || params.id;
+  if (id) {
+    filas = filas.filter(function (f) { return String(f[def.pk]).trim() === String(id).trim(); });
+  }
   return respuestaJson({ ok: true, datos: filas });
 }
 

@@ -18,8 +18,8 @@
   /** Orden de columnas: MES + columnas de la tabla del mes (según APP_TABLES). */
   var columnasTabla = ['MES'].concat(COLUMNAS_VENTAS_DEF);
 
-  /** Columnas que no se muestran en la tabla. */
-  var columnasOcultas = ['MES', 'AÑO', 'ID-VENTA', 'ID-PRODUCTO'];
+  /** Columnas que no se muestran en la tabla (FECHA_OPERATIVA se ve en el encabezado de grupo). */
+  var columnasOcultas = ['MES', 'AÑO', 'ID-VENTA', 'ID-PRODUCTO', 'NOMBRE-APELLIDO', 'TIPO-LISTA-PRECIO', 'FECHA_OPERATIVA'];
 
   var allData = [];
   var filteredData = [];
@@ -255,6 +255,38 @@
     wrapper.hidden = false;
   }
 
+  /** Agrupa datos por FECHA_OPERATIVA y dentro de cada fecha por NOMBRE-APELLIDO + TIPO-LISTA-PRECIO. */
+  function agruparPorFechaYCliente(datos) {
+    var claveFecha = function (r) {
+      var f = r.FECHA_OPERATIVA;
+      if (f === undefined || f === null) return '';
+      var s = String(f).trim();
+      if (s.indexOf('T') !== -1) s = s.substring(0, s.indexOf('T'));
+      return s;
+    };
+    var ordenarFila = function (a, b) {
+      var fa = claveFecha(a), fb = claveFecha(b);
+      if (fa !== fb) return fa < fb ? -1 : 1;
+      var na = (a['NOMBRE-APELLIDO'] || '').trim(), nb = (b['NOMBRE-APELLIDO'] || '').trim();
+      if (na !== nb) return na < nb ? -1 : 1;
+      var ta = (a['TIPO-LISTA-PRECIO'] || '').trim(), tb = (b['TIPO-LISTA-PRECIO'] || '').trim();
+      return ta < tb ? -1 : (ta > tb ? 1 : 0);
+    };
+    var ordenado = datos.slice().sort(ordenarFila);
+    var grupos = [];
+    var i = 0;
+    while (i < ordenado.length) {
+      var fechaKey = claveFecha(ordenado[i]);
+      var filasFecha = [];
+      while (i < ordenado.length && claveFecha(ordenado[i]) === fechaKey) {
+        filasFecha.push(ordenado[i]);
+        i++;
+      }
+      grupos.push({ fechaKey: fechaKey, filas: filasFecha });
+    }
+    return grupos;
+  }
+
   function renderTable(searchTerm, nombreMes, columnas) {
     var tbody = document.getElementById('listado-ventas-tbody');
     var footer = document.getElementById('table-footer');
@@ -275,55 +307,104 @@
     if (!columnas) columnas = currentColumnas.length ? currentColumnas : columnasTabla;
     if (!nombreMes) nombreMes = currentNombreMes;
 
-    var totalFilt = filteredData.reduce(function (s, r) {
-      return s + (parseFloat(r.MONTO) || 0);
+    var totalFilt = filteredData.reduce(function (sum, r) {
+      return sum + (parseFloat(r.MONTO) || 0);
     }, 0);
 
-    var totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+    var grupos = agruparPorFechaYCliente(filteredData);
+    var pageSizeEl = document.getElementById('table-page-size');
+    var gruposPerPage = Math.max(1, parseInt(pageSizeEl && pageSizeEl.value, 10) || 10);
+    var totalPages = Math.max(1, Math.ceil(grupos.length / gruposPerPage));
     if (currentPage > totalPages) currentPage = totalPages;
-    var start = (currentPage - 1) * pageSize;
-    var end = Math.min(start + pageSize, filteredData.length);
-    var pageData = filteredData.slice(start, end);
+    var startGroup = (currentPage - 1) * gruposPerPage;
+    var endGroup = Math.min(startGroup + gruposPerPage, grupos.length);
+    var pageGrupos = grupos.slice(startGroup, endGroup);
 
     tbody.innerHTML = '';
-    pageData.forEach(function (fila) {
-      var tr = document.createElement('tr');
-      columnas.forEach(function (col) {
-        var td = document.createElement('td');
-        var val = fila[col];
-        if (val === undefined || val === null) val = '';
-        if (col === 'MES') val = nombreMes;
-        if (col === 'FECHA_OPERATIVA') val = fmtFecha(val);
-        if (col === 'HORA') val = fmtHora(val);
-        if (col === 'ID-VENTA') {
-          td.className = 'id-venta';
-          td.textContent = val;
-        } else if (col === 'CATEGORIA') {
-          var cat = String(val).toLowerCase();
-          var badgeClass = 'badge-cat';
-          if (cat.indexOf('promo') !== -1) badgeClass += ' badge-cat--promos';
-          else if (cat.indexOf('bebida') !== -1) badgeClass += ' badge-cat--bebida';
-          else if (cat.indexOf('empanada') !== -1) badgeClass += ' badge-cat--empanada';
-          else if (cat.indexOf('postre') !== -1) badgeClass += ' badge-cat--postre';
-          td.innerHTML = '<span class="' + badgeClass + '">' + (val || '') + '</span>';
-        } else if (col === 'MONTO' && typeof val === 'number') {
-          td.className = 'td-num td-monto';
-          td.textContent = fmtMoney(val);
-        } else if (['CANTIDAD', 'PRECIO'].indexOf(col) !== -1 && typeof val === 'number') {
-          td.className = 'td-num';
-          td.textContent = Number(val).toLocaleString('es-AR');
-        } else {
-          td.textContent = val;
-        }
-        tr.appendChild(td);
+    var totalRegistrosPagina = 0;
+    pageGrupos.forEach(function (grupo) {
+      var subtotalFecha = grupo.filas.reduce(function (sum, r) { return sum + (parseFloat(r.MONTO) || 0); }, 0);
+      var subtotalCant = grupo.filas.reduce(function (sum, r) { return sum + (parseFloat(r.CANTIDAD) || 0); }, 0);
+      totalRegistrosPagina += grupo.filas.length;
+
+      var trFecha = document.createElement('tr');
+      trFecha.className = 'listado-ventas__fila-fecha';
+      var tdFecha = document.createElement('td');
+      tdFecha.colSpan = columnas.length;
+      tdFecha.textContent = 'FECHA: ' + fmtFecha(grupo.fechaKey);
+      tdFecha.className = 'listado-ventas__celda-fecha';
+      trFecha.appendChild(tdFecha);
+      tbody.appendChild(trFecha);
+
+      grupo.filas.forEach(function (fila) {
+        var tr = document.createElement('tr');
+        columnas.forEach(function (col) {
+          var td = document.createElement('td');
+          var val = fila[col];
+          if (val === undefined || val === null) val = '';
+          if (col === 'MES') val = nombreMes;
+          if (col === 'FECHA_OPERATIVA') val = fmtFecha(val);
+          if (col === 'HORA') val = fmtHora(val);
+          if (col === 'ID-VENTA') {
+            td.className = 'id-venta';
+            td.textContent = val;
+          } else if (col === 'CATEGORIA') {
+            var cat = String(val).toLowerCase();
+            var badgeClass = 'badge-cat';
+            if (cat.indexOf('promo') !== -1) badgeClass += ' badge-cat--promos';
+            else if (cat.indexOf('bebida') !== -1) badgeClass += ' badge-cat--bebida';
+            else if (cat.indexOf('empanada') !== -1) badgeClass += ' badge-cat--empanada';
+            else if (cat.indexOf('postre') !== -1) badgeClass += ' badge-cat--postre';
+            td.innerHTML = '<span class="' + badgeClass + '">' + (val || '') + '</span>';
+          } else if (col === 'MONTO' && typeof val === 'number') {
+            td.className = 'td-num td-monto';
+            td.textContent = fmtMoney(val);
+          } else if (['CANTIDAD', 'PRECIO'].indexOf(col) !== -1 && typeof val === 'number') {
+            td.className = 'td-num';
+            td.textContent = Number(val).toLocaleString('es-AR');
+          } else {
+            td.textContent = val;
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
       });
-      tbody.appendChild(tr);
+
+      var trSub = document.createElement('tr');
+      trSub.className = 'listado-ventas__fila-subtotal';
+      var idxCant = columnas.indexOf('CANTIDAD');
+      var idxMonto = columnas.indexOf('MONTO');
+      var colspanLabel = idxCant >= 0 ? idxCant : columnas.length - 2;
+      if (colspanLabel < 1) colspanLabel = 1;
+
+      var tdLabel = document.createElement('td');
+      tdLabel.className = 'listado-ventas__subtotal-label';
+      tdLabel.colSpan = colspanLabel;
+      tdLabel.textContent = 'Total del día';
+      trSub.appendChild(tdLabel);
+
+      for (var i = colspanLabel; i < columnas.length; i++) {
+        var col = columnas[i];
+        var td = document.createElement('td');
+        td.className = col === 'MONTO' || col === 'CANTIDAD' ? 'td-num' : '';
+        if (col === 'MONTO') {
+          td.textContent = fmtMoney(subtotalFecha);
+          td.classList.add('td-monto');
+        } else if (col === 'CANTIDAD') {
+          td.textContent = Number(subtotalCant).toLocaleString('es-AR');
+        } else {
+          td.textContent = '';
+        }
+        trSub.appendChild(td);
+      }
+      tbody.appendChild(trSub);
     });
 
+    var totalRegistros = filteredData.length;
     footer.innerHTML =
-      '<span>Mostrando <strong>' + (filteredData.length ? start + 1 : 0) + '-' + end + '</strong> de ' + filteredData.length + ' registros' +
+      '<span>Mostrando <strong>' + (grupos.length ? startGroup + 1 + '-' + endGroup + ' (fechas)' : '0') + '</strong> · ' + totalRegistros + ' registro(s)' +
       (allData.length !== filteredData.length ? ' (filtrado de ' + allData.length + ')' : '') + '</span>' +
-      '<span>Subtotal: <strong>' + fmtMoney(totalFilt) + '</strong></span>';
+      '<span>Total del Mes: <strong>' + fmtMoney(totalFilt) + '</strong></span>';
 
     if (pagination && paginationInfo && paginationPages) {
       var firstBtn = document.getElementById('table-pagination-first');
@@ -331,7 +412,7 @@
       var nextBtn = document.getElementById('table-pagination-next');
       var lastBtn = document.getElementById('table-pagination-last');
 
-      paginationInfo.textContent = 'Página ' + currentPage + ' de ' + totalPages;
+      paginationInfo.textContent = 'Página ' + currentPage + ' de ' + totalPages + ' (por fecha)';
       paginationPages.textContent = currentPage + ' / ' + totalPages;
 
       if (firstBtn) {

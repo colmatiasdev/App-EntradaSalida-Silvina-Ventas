@@ -14,10 +14,11 @@
       <h1>Panificacion Colombres</h1>
       <span class="header__subtitle">Sistema de Ventas</span>
     </div>
+    <a href="../../../index.html" class="header__inicio">Inicio</a>
     <nav class="nav" aria-hidden="true" hidden>
       <ul class="nav__menu">
         <li class="nav__item">
-          <a href="../Seleccionar-cliente/seleccionar-cliente.html" class="nav__link">Seleccionar cliente</a>
+          <a href="../Nueva-venta/Nueva-venta.html" class="nav__link">Nueva venta</a>
         </li>
         <li class="nav__item">
           <a href="../Nueva-venta/Nueva-venta.html" class="nav__link">Nueva venta</a>
@@ -25,16 +26,12 @@
         <li class="nav__item">
           <a href="listado-ventas.html" class="nav__link nav__link--active">Listado de ventas</a>
         </li>
-        <li class="nav__item">
-          <a href="../../Dashboard/dashboard.html" class="nav__link">Dashboard</a>
-        </li>
       </ul>
     </nav>
   </header>
 
   <main class="main">
     <div class="page-header">
-      <a href="../../../index.html" class="back-link">← Volver al inicio</a>
       <h1>Listado de ventas</h1>
     </div>
 
@@ -53,10 +50,12 @@
       <div class="table-header">
         <div class="table-header-title" id="listado-ventas-subtitulo">Detalle de ventas</div>
         <div class="table-header-actions">
-          <label for="table-page-size" class="table-page-size-label">Registros por página</label>
-          <select id="table-page-size" class="table-page-size-select" aria-label="Registros por página">
+          <label for="table-page-size" class="table-page-size-label">Fechas por página</label>
+          <select id="table-page-size" class="table-page-size-select" aria-label="Fechas por página">
+            <option value="1" selected>1</option>
+            <option value="5">5</option>
             <option value="10">10</option>
-            <option value="25" selected>25</option>
+            <option value="25">25</option>
             <option value="50">50</option>
           </select>
           <input type="search" class="table-search" id="table-search" placeholder="🔍 Buscar…">

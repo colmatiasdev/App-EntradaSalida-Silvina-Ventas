@@ -17,7 +17,7 @@
     PRODUCTOS: {
       sheet: 'PRODUCTOS',
       pk: 'ID-PRODUCTO',
-      columns: ['ID-PRODUCTO', 'CATEGORIA', 'NOMBRE-PRODUCTO', 'PRECIO-MAYORISTA', 'PRECIO-DISTRIBUIDOR', 'HABILITADO']
+      columns: ['ID-PRODUCTO', 'COMERCIO-SUCURSAL', 'CATEGORIA', 'NOMBRE-PRODUCTO', 'PRECIO', 'HABILITADO']
     },
 
     /** Tablas de ventas por mes. PK = ID-VENTA (puede haber varias filas por venta). */
@@ -87,6 +87,13 @@
       sheet: 'RESUMEN-VENTAS',
       pk: 'MES',
       columns: ['MES', 'DIA', 'CATEGORIA', 'NOMBRE-PRODUCTO', 'CANTIDAD', 'MONTO']
+    },
+
+    /** Tabla RESUMEN-OPERATIVO: resumen operativo por fecha, hora, tipo y categoría. */
+    RESUMEN_OPERATIVO: {
+      sheet: 'RESUMEN-OPERATIVO',
+      pk: 'ID-RESUMEN',
+      columns: ['ID-RESUMEN', 'FECHA_OPERATIVA', 'HORA', 'CORRESPONDE-A', 'TIPO-OPERACION', 'CATEGORIA', 'IMPORTE']
     }
   };
 
