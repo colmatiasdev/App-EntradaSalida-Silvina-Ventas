@@ -31,14 +31,15 @@
     USUARIO: 'USR-SILVINA',
 
     /**
-     * Cómo se muestra cada código de usuario en pantalla.
-     * Clave = valor guardado en el Sheet (columna USUARIO). Valor = texto a mostrar.
+     * Cómo se muestra cada código de usuario en pantalla (etiqueta y color de identificación).
+     * Clave = valor guardado en el Sheet (columna USUARIO).
+     * Valor = { etiqueta: 'Nombre', color: '#hex' }.
      */
     USUARIO_ETIQUETAS: {
-      'USR-SILVINA': 'Silvina',
-      'USR-MATIAS': 'Matias',
-      'USR-MILY': 'Mily',
-      'USR-VICKY': 'Vicky'
+      'USR-SILVINA': { etiqueta: 'Silvina', color: '#c0392b' },
+      'USR-MATIAS': { etiqueta: 'Matias', color: '#2980b9' },
+      'USR-MILY': { etiqueta: 'Mily', color: '#27ae60' },
+      'USR-VICKY': { etiqueta: 'Vicky', color: '#8e44ad' }
     },
 
     /**
@@ -48,8 +49,21 @@
      */
     getUsuarioEtiqueta: function (codigo) {
       var c = (codigo === undefined || codigo === null) ? '' : String(codigo).trim();
-      var etiq = this.USUARIO_ETIQUETAS && this.USUARIO_ETIQUETAS[c];
-      return etiq !== undefined ? etiq : c;
+      var entry = this.USUARIO_ETIQUETAS && this.USUARIO_ETIQUETAS[c];
+      if (entry === undefined) return c;
+      return typeof entry === 'object' && entry && entry.etiqueta !== undefined ? entry.etiqueta : String(entry);
+    },
+
+    /**
+     * Devuelve el color de identificación para un código de usuario.
+     * @param {string} codigo - Valor de la columna USUARIO (ej. USR-SILVINA).
+     * @returns {string} Color en hex (ej. #c0392b) o '' si no está configurado.
+     */
+    getUsuarioColor: function (codigo) {
+      var c = (codigo === undefined || codigo === null) ? '' : String(codigo).trim();
+      var entry = this.USUARIO_ETIQUETAS && this.USUARIO_ETIQUETAS[c];
+      if (entry && typeof entry === 'object' && entry.color) return entry.color;
+      return '';
     },
 
     /**

@@ -53,6 +53,19 @@
     return '$\u00a0' + Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
+  /** Convierte color hex a rgba con alpha (0–1). Acepta #rgb o #rrggbb. */
+  function hexToRgba(hex, alpha) {
+    if (!hex || typeof hex !== 'string') return 'transparent';
+    var h = hex.replace(/^#/, '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    if (h.length !== 6) return 'transparent';
+    var r = parseInt(h.slice(0, 2), 16);
+    var g = parseInt(h.slice(2, 4), 16);
+    var b = parseInt(h.slice(4, 6), 16);
+    var a = typeof alpha === 'number' ? alpha : 0.1;
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
   /** Formatea fecha a dd-MM-YYYY (ej: 22-02-2026). Acepta ISO con hora (2026-02-22T03:00:00.000Z) o solo fecha. */
   function fmtFecha(val) {
     if (val === undefined || val === null || val === '') return '';
@@ -365,7 +378,18 @@
             td.className = 'td-num';
             td.textContent = Number(val).toLocaleString('es-AR');
           } else if (col === 'USUARIO') {
-            td.textContent = (APP_CONFIG && typeof APP_CONFIG.getUsuarioEtiqueta === 'function') ? APP_CONFIG.getUsuarioEtiqueta(val) : val;
+            var etiqueta = (APP_CONFIG && typeof APP_CONFIG.getUsuarioEtiqueta === 'function') ? APP_CONFIG.getUsuarioEtiqueta(val) : val;
+            var color = (APP_CONFIG && typeof APP_CONFIG.getUsuarioColor === 'function') ? APP_CONFIG.getUsuarioColor(val) : '';
+            if (color) {
+              var span = document.createElement('span');
+              span.className = 'listado-ventas__badge-usuario';
+              span.style.color = color;
+              span.style.backgroundColor = hexToRgba(color, 0.1);
+              span.textContent = etiqueta;
+              td.appendChild(span);
+            } else {
+              td.textContent = etiqueta;
+            }
           } else {
             td.textContent = val;
           }
