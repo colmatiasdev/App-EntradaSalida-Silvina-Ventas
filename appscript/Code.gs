@@ -54,7 +54,7 @@ var TABLAS = {
   OPERACIONES_GENERALES: {
     sheet: 'OPERACIONES-GENERALES',
     pk: 'ID-OPERACION-GRAL',
-    columns: ['ID-OPERACION-GRAL', 'FECHA_OPERATIVA', 'HORA', 'CORRESPONDE-A', 'TIPO-OPERACION', 'DESCRIPCION', 'IMPORTE']
+    columns: ['ID-OPERACION-GRAL', 'FECHA_OPERATIVA', 'HORA', 'CORRESPONDE-A', 'TIPO-OPERACION', 'DESCRIPCION', 'IMPORTE', 'USUARIO']
   },
   COMPONENTE_COMBO: {
     sheet: 'COMPONENTE-COMBO',
@@ -636,7 +636,8 @@ function operacionesGralAlta(params) {
     'CORRESPONDE-A': dato['CORRESPONDE-A'] !== undefined ? dato['CORRESPONDE-A'] : (params.correspondeA || ''),
     'TIPO-OPERACION': dato['TIPO-OPERACION'] !== undefined ? dato['TIPO-OPERACION'] : (params.tipoOperacion || ''),
     'DESCRIPCION': dato['DESCRIPCION'] !== undefined ? dato['DESCRIPCION'] : (params.descripcion || ''),
-    'IMPORTE': dato['IMPORTE'] !== undefined ? dato['IMPORTE'] : (params.importe !== undefined ? params.importe : 0)
+    'IMPORTE': dato['IMPORTE'] !== undefined ? dato['IMPORTE'] : (params.importe !== undefined ? params.importe : 0),
+    'USUARIO': dato['USUARIO'] !== undefined ? dato['USUARIO'] : (params.usuario || '')
   };
   var fila = objetoAFila(def, obj);
   sheet.appendRow(fila);

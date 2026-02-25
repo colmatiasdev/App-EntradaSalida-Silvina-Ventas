@@ -48,14 +48,14 @@
  *    - descripcion     = input descripción (getDescripcion()).
  *    - importe        = input importe (getImporte()); si vacío → 0.
  * 3. fechaOperativa = NEGOCIO.getFechaOperativa(), hora = HH:MM, idOperacionGral = 'OG-' + Date.now().
- * 4. Payload: accion 'operacionesGralAlta', idOperacionGral, fechaOperativa, hora, correspondeA, tipoOperacion, descripcion, importe.
+ * 4. Payload: accion 'operacionesGralAlta', idOperacionGral, fechaOperativa, hora, correspondeA, tipoOperacion, descripcion, importe, usuario.
  * 5. POST → Backend operacionesGralAlta() escribe una fila en la hoja OPERACIONES-GENERALES.
  * 6. Si ok: mensaje "Operación guardada en OPERACIONES-GENERALES.", se vacían descripción e importe.
  *
  * HOJAS DEL SHEET
  * ---------------
  * - COMPONENTE-COMBO: valores para el combo TIPO-OPERACION.
- * - OPERACIONES-GENERALES: ID-OPERACION-GRAL, FECHA_OPERATIVA, HORA, CORRESPONDE-A, TIPO-OPERACION, DESCRIPCION, IMPORTE.
+ * - OPERACIONES-GENERALES: ID-OPERACION-GRAL, FECHA_OPERATIVA, HORA, CORRESPONDE-A, TIPO-OPERACION, DESCRIPCION, IMPORTE, USUARIO.
  *
  * API: componenteComboLeer, operacionesGralAlta.
  * EXPUESTO: getCategoria(), getDescripcion(), getImporte(), getNombreApellido(), getCantidad(), CANTIDAD.
@@ -141,6 +141,7 @@
     var hora = ahora.getHours() + ':' + (ahora.getMinutes() < 10 ? '0' : '') + ahora.getMinutes();
     var idOperacionGral = 'OG-' + Date.now();
     var correspondeA = getNombreApellido();
+    var usuario = (window.APP_CONFIG && window.APP_CONFIG.USUARIO) ? String(window.APP_CONFIG.USUARIO).trim() : correspondeA;
 
     var payload = {
       accion: 'operacionesGralAlta',
@@ -150,7 +151,8 @@
       correspondeA: correspondeA,
       tipoOperacion: tipoOperacion,
       descripcion: descripcion,
-      importe: importeNum
+      importe: importeNum,
+      usuario: usuario
     };
 
     var btnGuardar = getBtnGuardar();

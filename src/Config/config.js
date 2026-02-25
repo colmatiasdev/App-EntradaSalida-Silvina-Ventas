@@ -42,7 +42,13 @@
     ],
 
     /** Proxy CORS. Dejar '' para usar directo APP_SCRIPT_URL. */
-    CORS_PROXY: ''
+    CORS_PROXY: '',
+
+    /**
+     * Usuario que se guarda en OPERACIONES-GENERALES (columna USUARIO).
+     * Opcional: si no se define, se usa el mismo valor que CORRESPONDE-A (responsable del gasto).
+     */
+    // USUARIO: 'MATIAS'
   };
 
   global.APP_CONFIG = Config;
