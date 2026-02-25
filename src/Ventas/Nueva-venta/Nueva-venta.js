@@ -249,7 +249,9 @@
     if (botonAgregar && botonAgregar.classList && botonAgregar.classList.contains('nueva-venta__btn-add')) {
       marcarBotonAgregado(botonAgregar);
     }
-    showToast('Producto agregado. Podés seguir agregando más o ver el carrito abajo.');
+    if (carrito.length > 0) {
+      showToast('Producto agregado. Podés seguir agregando más o ver el carrito abajo.');
+    }
   }
 
   function marcarBotonAgregado(btn) {
@@ -301,6 +303,7 @@
       var totalMobile = document.getElementById('nueva-venta-total-mobile');
       if (totalMobile) totalMobile.textContent = '';
       if (btnGuardar) btnGuardar.disabled = true;
+      ocultarToast();
       return;
     }
     vacio.hidden = true;
@@ -422,8 +425,9 @@
     var ahora = new Date();
     var hora = ahora.getHours() + ':' + (ahora.getMinutes() < 10 ? '0' : '') + ahora.getMinutes();
     var idVenta = 'V-' + Date.now();
-    var nombreApellido = clienteSeleccionado ? (clienteSeleccionado['NOMBRE-APELLIDO'] || '').trim() : '';
+    var nombreApellido = 'MATIAS';
     var tipoListaPrecio = clienteSeleccionado ? (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim() : '';
+    var usuario = (window.APP_CONFIG && window.APP_CONFIG.USUARIO) ? String(window.APP_CONFIG.USUARIO).trim() : '';
     var payload = {
       accion: 'guardarVenta',
       hoja: nombreHoja,
@@ -432,6 +436,7 @@
       hora: hora,
       nombreApellido: nombreApellido,
       tipoListaPrecio: tipoListaPrecio,
+      usuario: usuario,
       total: total,
       items: carrito.map(function (item) {
         return {
@@ -513,7 +518,7 @@
     if (bloqueCliente) {
       bloqueCliente.classList.add('nueva-venta__cliente-info--visible');
       var nombreEl = bloqueCliente.querySelector('.nueva-venta__cliente-nombre');
-      if (nombreEl) nombreEl.textContent = clienteSeleccionado ? ((clienteSeleccionado['NOMBRE-APELLIDO'] || '').trim() || '(Sin nombre)') : 'Sin cliente';
+      if (nombreEl) nombreEl.textContent = 'MATIAS';
     }
     if (tipoEl) tipoEl.textContent = clienteSeleccionado ? ((clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim() ? ' · ' + (clienteSeleccionado['TIPO-LISTA-PRECIO'] || '').trim() : '') : '';
   }

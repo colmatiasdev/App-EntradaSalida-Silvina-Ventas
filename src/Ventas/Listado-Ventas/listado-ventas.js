@@ -266,7 +266,9 @@
     };
     var ordenarFila = function (a, b) {
       var fa = claveFecha(a), fb = claveFecha(b);
-      if (fa !== fb) return fa < fb ? -1 : 1;
+      if (fa !== fb) return fa > fb ? -1 : 1;
+      var ha = (a.HORA || '').toString().trim(), hb = (b.HORA || '').toString().trim();
+      if (ha !== hb) return ha > hb ? -1 : 1;
       var na = (a['NOMBRE-APELLIDO'] || '').trim(), nb = (b['NOMBRE-APELLIDO'] || '').trim();
       if (na !== nb) return na < nb ? -1 : 1;
       var ta = (a['TIPO-LISTA-PRECIO'] || '').trim(), tb = (b['TIPO-LISTA-PRECIO'] || '').trim();
@@ -362,6 +364,8 @@
           } else if (['CANTIDAD', 'PRECIO'].indexOf(col) !== -1 && typeof val === 'number') {
             td.className = 'td-num';
             td.textContent = Number(val).toLocaleString('es-AR');
+          } else if (col === 'USUARIO') {
+            td.textContent = (APP_CONFIG && typeof APP_CONFIG.getUsuarioEtiqueta === 'function') ? APP_CONFIG.getUsuarioEtiqueta(val) : val;
           } else {
             td.textContent = val;
           }

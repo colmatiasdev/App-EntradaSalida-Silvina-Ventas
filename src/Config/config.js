@@ -27,6 +27,31 @@
     HOJA_PRODUCTOS: 'PRODUCTOS',
     HOJA_CLIENTES: 'CLIENTES',
 
+    /** Valor para la columna USUARIO (OPERACIONES-GENERALES, ventas ENERO..DICIEMBRE, etc.). */
+    USUARIO: 'USR-SILVINA',
+
+    /**
+     * Cómo se muestra cada código de usuario en pantalla.
+     * Clave = valor guardado en el Sheet (columna USUARIO). Valor = texto a mostrar.
+     */
+    USUARIO_ETIQUETAS: {
+      'USR-SILVINA': 'Silvina',
+      'USR-MATIAS': 'Matias',
+      'USR-MILY': 'Mily',
+      'USR-VICKY': 'Vicky'
+    },
+
+    /**
+     * Devuelve el nombre a mostrar para un código de usuario.
+     * @param {string} codigo - Valor de la columna USUARIO (ej. USR-SILVINA).
+     * @returns {string} Etiqueta configurada (ej. Silvina) o el mismo código si no está en USUARIO_ETIQUETAS.
+     */
+    getUsuarioEtiqueta: function (codigo) {
+      var c = (codigo === undefined || codigo === null) ? '' : String(codigo).trim();
+      var etiq = this.USUARIO_ETIQUETAS && this.USUARIO_ETIQUETAS[c];
+      return etiq !== undefined ? etiq : c;
+    },
+
     /**
      * Categorías para el filtro en Nueva venta. Mismo orden que en la hoja PRODUCTOS (columna CATEGORIA).
      */
@@ -42,13 +67,7 @@
     ],
 
     /** Proxy CORS. Dejar '' para usar directo APP_SCRIPT_URL. */
-    CORS_PROXY: '',
-
-    /**
-     * Usuario que se guarda en OPERACIONES-GENERALES (columna USUARIO).
-     * Opcional: si no se define, se usa el mismo valor que CORRESPONDE-A (responsable del gasto).
-     */
-    // USUARIO: 'MATIAS'
+    CORS_PROXY: ''
   };
 
   global.APP_CONFIG = Config;
