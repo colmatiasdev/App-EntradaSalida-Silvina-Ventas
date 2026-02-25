@@ -3,63 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Panificacion Colombres - Ventas</title>
+  <meta name="theme-color" content="#c0392b">
+  <meta name="description" content="Sistema de control de ventas - Panificación Colombres">
+  <title>Panificación Colombres</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="index.css">
-  <link rel="stylesheet" href="src/Footer/footer.css">
 </head>
 <body>
-  <header class="header c-header">
-    <div class="header__logo c-header__info">
-      <h1>Panificacion Colombres</h1>
-      <span class="header__subtitle c-header__sub">MÓDULO DE CONTROL VENTAS PARA <strong>MATIAS</strong></span>
+
+  <header class="header">
+    <div class="header__rainbow"></div>
+    <div class="header__inner">
+      <div class="logo">
+        <div class="logo__img-wrap" aria-hidden="true">
+          <img src="src/img/Logo.jpg" alt="Panificación Colombres" class="logo__img" onerror="this.classList.add('logo__img--error')">
+        </div>
+        <div class="logo__texto">
+          <span class="logo__nombre">Panificación Colombres</span>
+          <span class="logo__sub">Control de ventas para <strong>MATIAS</strong></span>
+        </div>
+      </div>
+      <div class="header__div"></div>
     </div>
-    <nav class="nav">
-      <ul class="nav__menu">
-        <li class="nav__item">
-          <a href="src/Ventas/Nueva-venta/Nueva-venta.html" class="nav__link nav__link--active">
-            Nueva venta
-          </a>
-        </li>
-      </ul>
-    </nav>
   </header>
 
   <main class="main">
-    <section class="hero hub-hero a-in">
-      <h1 class="hero__title hub-title">
-        <em>Ventas</em>
-      </h1>
-      <p class="hero__text">
-        Selecciona una opción para comenzar: registrar una nueva venta o consultar el listado y resumen de ventas.
+    <section class="hero a-in">
+      <div class="hero__kicker">🥖 Elaboración Artesanal</div>
+      <h1 class="hero__titulo">Sistema de <em>Ventas</em></h1>
+      <p class="hero__desc">
+        Gestioná tu negocio de forma eficiente. Seleccioná una opción para comenzar:
+        registrar nuevas ventas, consultar el historial o gestionar gastos.
       </p>
-      <div class="hero__cards hub-grid">
-        <a href="src/Ventas/Nueva-venta/Nueva-venta.html" class="card hub-card hub-card--cool">
-          <span class="card__icon">🛒</span>
-          <div class="hub-card__name card__title">Nueva Venta</div>
-          <p class="card__text">Seleccionar cliente y registrar una nueva venta.</p>
-        </a>
-        <a href="src/Ventas/Listado-Ventas/listado-ventas.html" class="card hub-card hub-card--urface">
-          <span class="card__icon">📅</span>
-          <div class="hub-card__name card__title">Resumen de la Venta</div>
-          <p class="card__text">Consultar y analizar ventas por período mensual.</p>
-        </a>
-        <a href="src/Ventas/otro-tipo-ventas/otro-tipo-ventas.html" class="card hub-card">
-          <span class="card__icon">📋</span>
-          <div class="hub-card__name card__title">Otro tipo de ventas</div>
-          <p class="card__text">Registrar ventas con otro criterio o flujo.</p>
-        </a>
-        <a href="src/Gastos-Salida/gastos-salida.html" class="card hub-card">
-          <span class="card__icon">📤</span>
-          <div class="hub-card__name card__title">Gastos de Salida</div>
-          <p class="card__text">Cargar y consultar gastos de salida del negocio.</p>
-        </a>
-      </div>
     </section>
+
+    <div class="cards-grid">
+      <a href="src/Ventas/Nueva-venta/Nueva-venta.html" class="card card--red a-in-2">
+        <div class="card__icon-wrap">🛒</div>
+        <div class="card__titulo">Nueva Venta</div>
+        <p class="card__desc">Registrá ventas rápidamente seleccionando cliente y productos del catálogo.</p>
+        <div class="card__arrow">→</div>
+      </a>
+      <a href="src/Ventas/Listado-Ventas/listado-ventas.html" class="card card--orange a-in-3">
+        <div class="card__icon-wrap">📊</div>
+        <div class="card__titulo">Resumen de Ventas</div>
+        <p class="card__desc">Consultá y analizá el historial de ventas con filtros por período mensual.</p>
+        <div class="card__arrow">→</div>
+      </a>
+      <a href="src/Ventas/otro-tipo-ventas/otro-tipo-ventas.html" class="card card--teal a-in-4">
+        <div class="card__icon-wrap">📋</div>
+        <div class="card__titulo">Otro Tipo de Ventas</div>
+        <p class="card__desc">Registrá operaciones especiales con criterios personalizados.</p>
+        <div class="card__arrow">→</div>
+      </a>
+      <a href="src/Gastos-Salida/gastos-salida.html" class="card card--purple a-in-5">
+        <div class="card__icon-wrap">💰</div>
+        <div class="card__titulo">Gastos de Salida</div>
+        <p class="card__desc">Gestioná y consultá los gastos operativos del negocio.</p>
+        <div class="card__arrow">→</div>
+      </a>
+    </div>
   </main>
 
-  <div id="footer-container" data-footer-src="src/Footer/footer.html"></div>
+  <footer class="footer">
+    <div class="footer__rainbow"></div>
+    <div class="footer__inner">
+      <img src="src/img/Logo.jpg" alt="" class="footer__logo-mini" onerror="this.style.display='none'">
+      <span>© <span id="footer-year"></span> Panificación Colombres — Elaboración Artesanal</span>
+    </div>
+  </footer>
 
+  <script>
+    (function () {
+      var yearEl = document.getElementById('footer-year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    })();
+  </script>
   <script src="main.js"></script>
-  <script src="src/Footer/footer.js"></script>
 </body>
 </html>

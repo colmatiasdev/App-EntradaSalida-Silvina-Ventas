@@ -3,21 +3,25 @@
   display: none !important;
 }
 
-.header__inicio {
+.nav__link--active {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 1rem;
-  background: var(--color-primary);
+  padding: 0.65rem 1.15rem;
+  min-height: 44px;
+  background: var(--gradient-brand);
   color: #fff;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
-  border-radius: var(--radius, 8px);
-  transition: background 0.2s;
+  border-radius: var(--radius-sm, 8px);
+  transition: all var(--transition-fast, 0.2s ease);
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-sm);
 }
-.header__inicio:hover {
-  background: var(--color-primary-dark, #9a1830);
+.nav__link--active:hover {
   color: #fff;
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Listado y resumen */
@@ -169,19 +173,48 @@
   font-weight: 600;
 }
 
+.nueva-venta__item-cantidad {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a7f37;
+  background: rgba(26, 127, 55, 0.12);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius, 6px);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nueva-venta__item-cantidad[hidden] {
+  display: none;
+}
+
 .nueva-venta__btn-add {
   margin-left: auto;
-  padding: 0.35rem 0.75rem;
+  padding: 0.5rem 1rem;
+  min-height: 44px;
+  min-width: 44px;
   background: var(--color-primary);
   color: white;
   border: none;
   border-radius: var(--radius);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .nueva-venta__btn-add:hover {
   background: var(--color-primary-dark);
+}
+
+.nueva-venta__btn-add--added,
+.nueva-venta__btn-add--added:hover {
+  background: #1a7f37;
+  color: #fff;
+  cursor: default;
 }
 
 .nueva-venta__resumen {
@@ -190,9 +223,133 @@
   border-top: 1px solid #eee;
 }
 
+.nueva-venta__resumen-aviso {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0;
+}
+
 .nueva-venta__resumen-vacio {
   color: var(--color-text-muted);
   font-size: 0.95rem;
+}
+
+/* Toast al agregar */
+.nueva-venta__toast {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0.85rem 1rem;
+  padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
+  background: #ffffff;
+  border-top: 3px solid var(--color-primary);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.nueva-venta__toast-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.nueva-venta__toast-ver {
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--color-primary);
+  border: 2px solid #922b21;
+  border-radius: var(--radius);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  box-shadow: 0 2px 6px rgba(196, 30, 58, 0.35);
+}
+
+.nueva-venta__toast-ver:hover {
+  background: var(--color-primary-dark);
+  color: #ffffff;
+  border-color: #7a231c;
+  box-shadow: 0 3px 8px rgba(196, 30, 58, 0.4);
+}
+
+/* Cards del resumen (móvil) */
+.nueva-venta__resumen-cards {
+  display: none;
+}
+
+.nueva-venta__card {
+  background: var(--color-surface);
+  border: 1px solid #eee;
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.nueva-venta__card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.nueva-venta__card-nombre {
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.nueva-venta__btn-quitar--card {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+}
+
+.nueva-venta__card-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.nueva-venta__card-precio {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.nueva-venta__qty-wrap--card .nueva-venta__qty-btn {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+}
+
+.nueva-venta__card-subtotal {
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-left: auto;
+}
+
+.nueva-venta__total-mobile {
+  display: none;
+  margin: 0;
+  padding: 0;
 }
 
 .nueva-venta__tabla {
@@ -307,6 +464,7 @@
   pointer-events: none;
 }
 
+
 .nueva-venta__cliente {
   margin-top: 1rem;
   padding: 0.75rem 0;
@@ -420,6 +578,36 @@
 
   .nueva-venta__resumen {
     padding: 1rem;
+  }
+
+  .nueva-venta__tabla {
+    display: none !important;
+  }
+
+  .nueva-venta__resumen-cards {
+    display: block;
+  }
+
+  .nueva-venta__btn-quitar {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .nueva-venta__qty-btn {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .nueva-venta__total-mobile {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary);
   }
 }
 

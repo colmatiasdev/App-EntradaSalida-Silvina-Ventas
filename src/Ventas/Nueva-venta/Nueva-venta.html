@@ -3,37 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Nueva venta - Panificacion Colombres</title>
+  <title>Nueva venta - Panificación Colombres</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../index.css">
   <link rel="stylesheet" href="../../Footer/footer.css">
   <link rel="stylesheet" href="Nueva-venta.css">
 </head>
 <body>
-  <header class="header header--no-nav">
-    <div class="header__logo">
-      <h1>Panificacion Colombres</h1>
-      <span class="header__subtitle">MÓDULO DE CONTROL VENTAS PARA <strong>MATIAS</strong></span>
+  <header class="header">
+    <div class="header__rainbow"></div>
+    <div class="header__inner">
+      <div class="logo">
+        <div class="logo__img-wrap" aria-hidden="true">
+          <img src="../../img/Logo.jpg" alt="Panificación Colombres" class="logo__img" onerror="this.classList.add('logo__img--error')">
+        </div>
+        <div class="logo__texto">
+          <span class="logo__nombre">Panificación Colombres</span>
+          <span class="logo__sub">Control de ventas para <strong>MATIAS</strong></span>
+        </div>
+      </div>
+      <div class="header__div"></div>
+      <a href="../../../index.html" class="header__inicio">Inicio</a>
     </div>
-    <a href="../../../index.html" class="header__inicio">Inicio</a>
-    <nav class="nav" aria-hidden="true" hidden>
-      <ul class="nav__menu">
-        <li class="nav__item">
-          <a href="Nueva-venta.html" class="nav__link">Nueva venta</a>
-        </li>
-        <li class="nav__item">
-          <a href="Nueva-venta.html" class="nav__link nav__link--active">Nueva venta</a>
-        </li>
-        <li class="nav__item">
-          <a href="../Listado-Ventas/listado-ventas.html" class="nav__link">Listado de ventas</a>
-        </li>
-        <li class="nav__item">
-          <a href="../otro-tipo-ventas/otro-tipo-ventas.html" class="nav__link">Otro tipo de ventas</a>
-        </li>
-        <li class="nav__item">
-          <a href="../../Gastos-Salida/gastos-salida.html" class="nav__link">Gastos de Salida</a>
-        </li>
-      </ul>
-    </nav>
   </header>
 
   <main class="main">
@@ -57,10 +49,13 @@
       <div class="nueva-venta__productos-wrapper" id="nueva-venta-productos"></div>
     </section>
 
-    <section class="nueva-venta__resumen">
+    <section class="nueva-venta__resumen" id="nueva-venta-resumen">
       <h2 class="nueva-venta__titulo">Resumen de la venta</h2>
+      <p class="nueva-venta__resumen-aviso" id="nueva-venta-resumen-aviso" hidden>Tenés <strong id="nueva-venta-resumen-count">0</strong> producto(s) en el carrito. Podés quitar cualquiera si lo agregaste por error.</p>
       <div class="nueva-venta__resumen-content" id="nueva-venta-resumen-content">
-        <p class="nueva-venta__resumen-vacio" id="nueva-venta-resumen-vacio">No hay productos en la venta. Selecciona productos arriba.</p>
+        <p class="nueva-venta__resumen-vacio" id="nueva-venta-resumen-vacio">No hay productos en la venta. Seleccioná productos arriba y usá "Agregar".</p>
+        <div class="nueva-venta__resumen-cards" id="nueva-venta-resumen-cards" aria-hidden="true"></div>
+        <p class="nueva-venta__total-mobile" id="nueva-venta-total-mobile" aria-live="polite"></p>
         <table class="nueva-venta__tabla" id="nueva-venta-tabla" hidden>
           <thead>
             <tr>
@@ -87,6 +82,11 @@
       </div>
     </section>
   </main>
+
+  <div class="nueva-venta__toast" id="nueva-venta-toast" role="status" aria-live="polite" hidden>
+    <span class="nueva-venta__toast-text" id="nueva-venta-toast-text"></span>
+    <button type="button" class="nueva-venta__toast-ver" id="nueva-venta-toast-ver">Ver carrito</button>
+  </div>
 
   <div id="footer-container" data-footer-src="../../Footer/footer.html"></div>
 
