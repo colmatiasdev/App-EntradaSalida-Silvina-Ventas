@@ -268,7 +268,20 @@
     wrapper.hidden = false;
   }
 
-  /** Agrupa datos por FECHA_OPERATIVA y dentro de cada fecha por NOMBRE-APELLIDO + TIPO-LISTA-PRECIO. */
+  /** Convierte HORA a minutos desde medianoche para ordenar (Date o string "H:mm" / "HH:mm"). */
+  function horaAMinutos(val) {
+    if (val === undefined || val === null || val === '') return 0;
+    if (val instanceof Date && !isNaN(val.getTime())) {
+      return val.getHours() * 60 + val.getMinutes();
+    }
+    var s = String(val).trim();
+    if (!s) return 0;
+    var parts = s.match(/^(\d{1,2}):(\d{2})/);
+    if (parts) return parseInt(parts[1], 10) * 60 + parseInt(parts[2], 10);
+    return 0;
+  }
+
+  /** Agrupa datos por FECHA_OPERATIVA y dentro de cada fecha por HORA (desc), luego NOMBRE-APELLIDO + TIPO-LISTA-PRECIO. */
   function agruparPorFechaYCliente(datos) {
     var claveFecha = function (r) {
       var f = r.FECHA_OPERATIVA;
@@ -280,8 +293,8 @@
     var ordenarFila = function (a, b) {
       var fa = claveFecha(a), fb = claveFecha(b);
       if (fa !== fb) return fa > fb ? -1 : 1;
-      var ha = (a.HORA || '').toString().trim(), hb = (b.HORA || '').toString().trim();
-      if (ha !== hb) return ha > hb ? -1 : 1;
+      var minA = horaAMinutos(a.HORA), minB = horaAMinutos(b.HORA);
+      if (minA !== minB) return minB - minA;
       var na = (a['NOMBRE-APELLIDO'] || '').trim(), nb = (b['NOMBRE-APELLIDO'] || '').trim();
       if (na !== nb) return na < nb ? -1 : 1;
       var ta = (a['TIPO-LISTA-PRECIO'] || '').trim(), tb = (b['TIPO-LISTA-PRECIO'] || '').trim();

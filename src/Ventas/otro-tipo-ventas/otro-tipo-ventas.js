@@ -81,6 +81,7 @@
     var hora = ahora.getHours() + ':' + (ahora.getMinutes() < 10 ? '0' : '') + ahora.getMinutes();
     var idVenta = PREFIJO_ID + Date.now();
     var nombreApellido = getNombreApellido();
+    var usuario = (window.APP_CONFIG && window.APP_CONFIG.USUARIO) ? String(window.APP_CONFIG.USUARIO).trim() : '';
 
     var payload = {
       accion: 'guardarVenta',
@@ -90,6 +91,7 @@
       hora: hora,
       nombreApellido: nombreApellido,
       tipoListaPrecio: TIPO_LISTA_PRECIO,
+      usuario: usuario,
       items: [{
         idProducto: ID_PRODUCTO_GENERICO,
         categoria: categoria,
